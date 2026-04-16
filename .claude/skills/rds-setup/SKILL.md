@@ -31,9 +31,11 @@ This skill installs the **RDS: R Data Science** module, which provides a compreh
 When this skill is invoked, it will:
 
 1. Verify the module structure exists in `_bmad/rds/`
-2. Register all 4 agents as available skills
-3. Confirm sidecar memory structure is ready
-4. Display quick start guide
+2. Merge module configuration into `_bmad/config.yaml`
+3. Register in help system via `_bmad/module-help.csv`
+4. Create symlinks for all 4 agents in `.claude/skills/`
+5. Confirm sidecar memory structure is ready
+6. Display quick start guide
 
 ## On Activation
 
@@ -111,6 +113,29 @@ Confirm:
 - ✅ All 4 agents exist in `_bmad/rds/agents/`
 - ✅ Sidecar memory structure ready
 
+### Step 6: Register Agent Skills
+
+Create symlinks for the 4 RDS agents in `.claude/skills/` to make them invokable:
+
+```bash
+cd {project-root}/.claude/skills
+for agent in ada grace alan marie; do
+  if [ ! -d "$agent" ]; then
+    mkdir -p "$agent"
+    ln -sf "../../../_bmad/rds/agents/${agent}.md" "$agent/SKILL.md"
+    echo "✅ Registered: /$agent"
+  else
+    echo "⚠️  Skill already exists: /$agent"
+  fi
+done
+```
+
+This enables users to invoke agents via:
+- `/ada` - Project Architect (Phases 1-3)
+- `/grace` - Data Scientist (Phases 4-5)
+- `/alan` - ML Engineer (Phases 6-8)
+- `/marie` - Communicator (Phases 9-10)
+
 ## Agent Registration
 
 The RDS module provides 4 specialized agents that users can invoke:
@@ -120,7 +145,7 @@ The RDS module provides 4 specialized agents that users can invoke:
 - **Alan (ML Engineer)** - `/alan` - Phases 6-8: Build, Tune, Evaluate
 - **Marie (Communicator)** - `/marie` - Phases 9-10: Report, Deploy
 
-**Note:** Agent invocation mechanism depends on BMad's skill discovery. Agents are located in `_bmad/rds/agents/` and should be callable after setup.
+**Note:** Agent skills are automatically registered in `.claude/skills/` via symlinks during Step 6 of the setup process.
 
 ## Quick Start Guide
 

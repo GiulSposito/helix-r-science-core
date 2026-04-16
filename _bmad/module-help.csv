@@ -1,0 +1,2 @@
+module,skill,display-name,menu-code,description,action,args,phase,after,before,required,output-location,outputs
+RDS: R Data Science,rds-setup,Setup RDS Module,SR,Install and configure the RDS (R Data Science) module with 4 specialized agents for the complete data science lifecycle.,configure,{inline values: skip prompts with provided values},anytime,,,false,{project-root}/_bmad/rds,config and agents

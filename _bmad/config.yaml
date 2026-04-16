@@ -1,0 +1,12 @@
+document_output_language: English
+output_folder: '{project-root}/_bmad-output'
+rds:
+  name: 'RDS: R Data Science'
+  description: 10-Phase Framework for R Data Science Excellence - From raw data to
+    production deployment
+  version: 1.0.0
+  default_selected: false
+  rds_workflows_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/workflows
+  rds_data_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/data
+  rds_templates_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/templates
+  rds_sidecar_memory: /Users/gsposito/Projects/HelixDS/science-core/_bmad/_memory

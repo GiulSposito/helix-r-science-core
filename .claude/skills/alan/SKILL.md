@@ -1,0 +1,1 @@
+../../../_bmad/rds/agents/alan.md
