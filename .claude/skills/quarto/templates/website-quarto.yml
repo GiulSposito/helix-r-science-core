@@ -1,0 +1,117 @@
+# Quarto Website Configuration
+# Place this as _quarto.yml in your project root
+
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "My Data Science Website"
+  site-url: "https://example.com"
+  description: "A website for sharing data analysis and insights"
+
+  navbar:
+    background: primary
+    search: true
+    left:
+      - href: index.qmd
+        text: Home
+      - href: about.qmd
+        text: About
+      - text: "Analysis"
+        menu:
+          - text: "Report 1"
+            href: analysis/report1.qmd
+          - text: "Report 2"
+            href: analysis/report2.qmd
+          - text: "---"
+          - text: "All Reports"
+            href: analysis/index.qmd
+    right:
+      - icon: github
+        href: https://github.com/username/repo
+      - icon: twitter
+        href: https://twitter.com/username
+
+  sidebar:
+    style: "docked"
+    background: light
+    logo: "images/logo.png"
+    search: true
+    contents:
+      - section: "Getting Started"
+        contents:
+          - index.qmd
+          - about.qmd
+      - section: "Analysis Reports"
+        contents:
+          - analysis/report1.qmd
+          - analysis/report2.qmd
+      - section: "Tutorials"
+        contents:
+          - tutorials/intro.qmd
+          - tutorials/advanced.qmd
+
+  page-footer:
+    left: |
+      © 2024 Your Name. All rights reserved.
+    right:
+      - icon: github
+        href: https://github.com/username
+      - icon: twitter
+        href: https://twitter.com/username
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    code-link: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    citations-hover: true
+    footnotes-hover: true
+
+execute:
+  echo: false
+  warning: false
+  message: false
+  freeze: auto  # Re-render only when source changes
+
+# For blogs, add listing configuration
+# Uncomment and customize as needed:
+#
+# website:
+#   navbar:
+#     left:
+#       - text: Blog
+#         href: blog/index.qmd
+#
+# # Blog listing page (blog/index.qmd frontmatter):
+# ---
+# title: "Blog"
+# listing:
+#   contents: posts
+#   sort: "date desc"
+#   type: default  # default, grid, table
+#   categories: true
+#   sort-ui: true
+#   filter-ui: true
+#   feed: true
+# page-layout: full
+# ---
+#
+# # Individual blog post frontmatter (blog/posts/post1.qmd):
+# ---
+# title: "Post Title"
+# author: "Author Name"
+# date: "2024-03-11"
+# categories: [R, analysis, visualization]
+# image: "thumbnail.jpg"
+# draft: false
+# ---

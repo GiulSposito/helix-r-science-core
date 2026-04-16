@@ -1,0 +1,399 @@
+# HelixDS Science Core - .gitignore
+
+# ============================================================================
+# Operating System Files
+# ============================================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ============================================================================
+# Python
+# ============================================================================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+poetry.lock
+Pipfile.lock
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# pyenv
+.python-version
+
+# Pytest
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+*.log
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ============================================================================
+# R
+# ============================================================================
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+.RDataTmp
+
+# User-specific files
+.Ruserdata
+
+# RStudio files
+.Rproj.user/
+*.Rproj
+.Rproj.user
+
+# OAuth2 token
+.httr-oauth
+.secrets
+
+# knitr and R markdown default cache directories
+*_cache/
+*_files/
+
+# Temporary files
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+.Rprofile
+
+# Translation temp files
+po/*~
+
+# RStudio Connect folder
+rsconnect/
+
+# pkgdown site
+docs/
+
+# renv library
+renv/
+renv.lock
+
+# plumber API
+plumber.log
+
+# ============================================================================
+# Node.js / JavaScript (if used for frontend/dashboards)
+# ============================================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn-integrity
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================================================
+# BMad / Claude Code Specific
+# ============================================================================
+
+# Generated outputs (artifacts, reports, etc)
+_bmad-output/
+
+# Agent sidecar memory (may contain project-specific data)
+# NOTE: Uncomment if you want to track sidecar memory in version control
+_bmad/_memory/
+
+# Local configuration overrides
+_bmad/config.local.yaml
+_bmad/*.local.yaml
+_bmad/**/config.local.yaml
+**/config.user.yaml
+
+# Temporary BMad files
+_bmad/temp/
+_bmad/tmp/
+_bmad/.tmp/
+
+# Claude Code session data
+.claude/sessions/
+.claude/cache/
+.claude/tmp/
+.claude/.cache/
+.claude/logs/
+
+# Module builder temporary files
+_bmad/bmb/temp/
+_bmad/bmb/.tmp/
+
+# ============================================================================
+# IDE and Editor Files
+# ============================================================================
+
+# VSCode
+.vscode/
+*.code-workspace
+.history/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+.sublime/
+
+# Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+*~
+tags
+[._]*.un~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ============================================================================
+# Data Files
+# ============================================================================
+
+# Large data files (add specific patterns as needed)
+*.csv.gz
+*.parquet
+*.feather
+*.rds
+*.RData
+*.rda
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# ============================================================================
+# Credentials and Secrets
+# ============================================================================
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.template
+
+# API keys and credentials
+**/credentials.json
+**/secrets.yaml
+**/secrets.yml
+**/.secrets/
+**/*.key
+**/*.pem
+**/*.p12
+**/*.pfx
+
+# ============================================================================
+# Documentation Build Artifacts
+# ============================================================================
+
+# Quarto
+.quarto/
+_site/
+_book/
+/.luarc.json
+
+# Sphinx
+_build/
+_static/
+_templates/
+
+# MkDocs
+site/
+
+# ============================================================================
+# Logs and Temporary Files
+# ============================================================================
+
+# Log files
+*.log
+logs/
+*.out
+*.err
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.backup
+*~.nib
+
+# ============================================================================
+# Testing and CI/CD
+# ============================================================================
+
+# Test outputs
+test-results/
+test-output/
+coverage/
+.nyc_output/
+
+# CI/CD artifacts
+.github/workflows/artifacts/
+
+# ============================================================================
+# Docker
+# ============================================================================
+
+# Docker files (if using for deployment)
+docker-compose.override.yml
+.docker/
+
+# ============================================================================
+# Project-Specific Exclusions
+# ============================================================================
+
+# Validation reports (optional - uncomment if you don't want to track them)
+# **/VALIDATION*.md
+# **/STATUS.md
+# **/TODO.md
+
+# Generated model artifacts
+models/trained/
+models/checkpoints/
+*.h5
+*.hdf5
+*.ckpt
+*.pt
+*.pth
+
+# Large workflow outputs
+workflows/outputs/
+workflows/artifacts/
+
+# ============================================================================
+# Keep These Files (Negation Patterns)
+# ============================================================================
+
+# Keep example/template files
+!.env.example
+!.env.template
+!**/example.yaml
+!**/template.yaml
+
+# Keep important config templates
+!_bmad/config.yaml
+!_bmad/rds/config.yaml
+
+# Keep README files
+!**/README.md
+!**/README.txt
+
+# Keep .gitkeep files to preserve empty directories
+!**/.gitkeep

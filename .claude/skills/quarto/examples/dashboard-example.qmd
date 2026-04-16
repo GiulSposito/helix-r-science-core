@@ -1,0 +1,498 @@
+---
+title: "Palmer Penguins Dashboard"
+author: "Data Analytics Team"
+format:
+  dashboard:
+    theme: cosmo
+    nav-buttons:
+      - icon: github
+        href: https://github.com/allisonhorst/palmerpenguins
+    logo: https://allisonhorst.github.io/palmerpenguins/logo.png
+    scrolling: false
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+
+library(tidyverse)
+library(palmerpenguins)
+library(plotly)
+library(DT)
+library(bslib)
+library(bsicons)
+
+# Remove NAs for cleaner dashboard
+penguins_clean <- penguins %>% drop_na()
+
+# Color palette
+species_colors <- c("Adelie" = "#FF8C00",
+                    "Chinstrap" = "#A034F0",
+                    "Gentoo" = "#159090")
+
+# Calculate metrics
+total_penguins <- nrow(penguins_clean)
+avg_body_mass <- mean(penguins_clean$body_mass_g)
+num_islands <- n_distinct(penguins_clean$island)
+study_years <- paste(min(penguins_clean$year), "-", max(penguins_clean$year))
+```
+
+# Overview {orientation="columns"}
+
+## Column {width="25%"}
+
+### Row {height="25%"}
+
+```{r}
+#| label: value-box-total
+#| content: valuebox
+#| title: "Total Penguins"
+
+list(
+  icon = "clipboard-data",
+  color = "primary",
+  value = total_penguins
+)
+```
+
+### Row {height="25%"}
+
+```{r}
+#| label: value-box-mass
+#| content: valuebox
+#| title: "Avg Body Mass"
+
+list(
+  icon = "arrow-up-circle",
+  color = "success",
+  value = paste0(round(avg_body_mass), " g")
+)
+```
+
+### Row {height="25%"}
+
+```{r}
+#| label: value-box-islands
+#| content: valuebox
+#| title: "Islands Studied"
+
+list(
+  icon = "geo-alt",
+  color = "info",
+  value = num_islands
+)
+```
+
+### Row {height="25%"}
+
+```{r}
+#| label: value-box-years
+#| content: valuebox
+#| title: "Study Period"
+
+list(
+  icon = "calendar-range",
+  color = "warning",
+  value = study_years
+)
+```
+
+## Column {width="75%"}
+
+### Row {height="50%"}
+
+```{r}
+#| label: species-scatter
+#| title: "Body Mass vs Flipper Length by Species"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g,
+             color = species, text = paste0(
+               "Species: ", species, "<br>",
+               "Flipper: ", flipper_length_mm, " mm<br>",
+               "Mass: ", body_mass_g, " g<br>",
+               "Island: ", island, "<br>",
+               "Sex: ", sex
+             ))) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_color_manual(values = species_colors) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p, tooltip = "text") %>%
+  layout(
+    hovermode = "closest",
+    legend = list(
+      orientation = "h",
+      y = -0.15,
+      x = 0.5,
+      xanchor = "center"
+    )
+  )
+```
+
+### Row {height="50%"}
+
+```{r}
+#| label: bill-dimensions
+#| title: "Bill Dimensions Comparison"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm,
+             color = species, text = paste0(
+               "Species: ", species, "<br>",
+               "Bill Length: ", bill_length_mm, " mm<br>",
+               "Bill Depth: ", bill_depth_mm, " mm<br>",
+               "Island: ", island
+             ))) +
+  geom_point(alpha = 0.7, size = 3) +
+  scale_color_manual(values = species_colors) +
+  labs(
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 13)
+
+ggplotly(p, tooltip = "text") %>%
+  layout(
+    hovermode = "closest",
+    legend = list(
+      orientation = "h",
+      y = -0.15,
+      x = 0.5,
+      xanchor = "center"
+    )
+  )
+```
+
+# Species Analysis {orientation="rows"}
+
+## Row {height="40%"}
+
+### Column {width="33%"}
+
+```{r}
+#| label: adelie-box
+#| title: "Adelie Penguins"
+
+adelie_count <- penguins_clean %>%
+  filter(species == "Adelie") %>%
+  nrow()
+
+adelie_avg_mass <- penguins_clean %>%
+  filter(species == "Adelie") %>%
+  summarise(avg = mean(body_mass_g)) %>%
+  pull(avg)
+
+adelie_islands <- penguins_clean %>%
+  filter(species == "Adelie") %>%
+  distinct(island) %>%
+  pull(island) %>%
+  paste(collapse = ", ")
+
+value_box(
+  title = "Adelie Overview",
+  value = adelie_count,
+  showcase = bs_icon("clipboard-data"),
+  theme = "primary",
+  p(paste0("Avg Mass: ", round(adelie_avg_mass), " g")),
+  p(paste0("Islands: ", adelie_islands))
+)
+```
+
+### Column {width="33%"}
+
+```{r}
+#| label: chinstrap-box
+#| title: "Chinstrap Penguins"
+
+chinstrap_count <- penguins_clean %>%
+  filter(species == "Chinstrap") %>%
+  nrow()
+
+chinstrap_avg_mass <- penguins_clean %>%
+  filter(species == "Chinstrap") %>%
+  summarise(avg = mean(body_mass_g)) %>%
+  pull(avg)
+
+chinstrap_islands <- penguins_clean %>%
+  filter(species == "Chinstrap") %>%
+  distinct(island) %>%
+  pull(island) %>%
+  paste(collapse = ", ")
+
+value_box(
+  title = "Chinstrap Overview",
+  value = chinstrap_count,
+  showcase = bs_icon("clipboard-data"),
+  theme = "warning",
+  p(paste0("Avg Mass: ", round(chinstrap_avg_mass), " g")),
+  p(paste0("Islands: ", chinstrap_islands))
+)
+```
+
+### Column {width="33%"}
+
+```{r}
+#| label: gentoo-box
+#| title: "Gentoo Penguins"
+
+gentoo_count <- penguins_clean %>%
+  filter(species == "Gentoo") %>%
+  nrow()
+
+gentoo_avg_mass <- penguins_clean %>%
+  filter(species == "Gentoo") %>%
+  summarise(avg = mean(body_mass_g)) %>%
+  pull(avg)
+
+gentoo_islands <- penguins_clean %>%
+  filter(species == "Gentoo") %>%
+  distinct(island) %>%
+  pull(island) %>%
+  paste(collapse = ", ")
+
+value_box(
+  title = "Gentoo Overview",
+  value = gentoo_count,
+  showcase = bs_icon("clipboard-data"),
+  theme = "success",
+  p(paste0("Avg Mass: ", round(gentoo_avg_mass), " g")),
+  p(paste0("Islands: ", gentoo_islands))
+)
+```
+
+## Row {height="60%"}
+
+### Column {width="50%"}
+
+```{r}
+#| label: species-distribution
+#| title: "Species Distribution by Island and Sex"
+
+species_dist <- penguins_clean %>%
+  count(species, island, sex) %>%
+  ggplot(aes(x = island, y = n, fill = species)) +
+  geom_col(position = "dodge") +
+  facet_wrap(~sex) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    x = "Island",
+    y = "Count",
+    fill = "Species"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+
+ggplotly(species_dist) %>%
+  layout(
+    legend = list(
+      orientation = "h",
+      y = -0.2,
+      x = 0.5,
+      xanchor = "center"
+    )
+  )
+```
+
+### Column {width="50%"}
+
+```{r}
+#| label: mass-distribution
+#| title: "Body Mass Distribution by Species"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = species, y = body_mass_g, fill = species,
+             text = paste0(
+               "Species: ", species, "<br>",
+               "Mass: ", body_mass_g, " g"
+             ))) +
+  geom_violin(alpha = 0.6) +
+  geom_jitter(width = 0.2, alpha = 0.3, size = 1) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    x = "Species",
+    y = "Body Mass (g)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "none")
+
+ggplotly(p, tooltip = "text")
+```
+
+# Measurements {orientation="columns"}
+
+## Column {width="40%"}
+
+### Row {height="33%"}
+
+```{r}
+#| label: bill-length-box
+#| title: "Bill Length by Species"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = species, y = bill_length_mm, fill = species)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    x = "Species",
+    y = "Bill Length (mm)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none")
+
+ggplotly(p) %>%
+  layout(showlegend = FALSE)
+```
+
+### Row {height="33%"}
+
+```{r}
+#| label: bill-depth-box
+#| title: "Bill Depth by Species"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = species, y = bill_depth_mm, fill = species)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    x = "Species",
+    y = "Bill Depth (mm)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none")
+
+ggplotly(p) %>%
+  layout(showlegend = FALSE)
+```
+
+### Row {height="33%"}
+
+```{r}
+#| label: flipper-box
+#| title: "Flipper Length by Species"
+
+p <- penguins_clean %>%
+  ggplot(aes(x = species, y = flipper_length_mm, fill = species)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    x = "Species",
+    y = "Flipper Length (mm)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "none")
+
+ggplotly(p) %>%
+  layout(showlegend = FALSE)
+```
+
+## Column {width="60%"}
+
+### Row {height="50%"}
+
+```{r}
+#| label: measurement-heatmap
+#| title: "Correlation Heatmap of Measurements"
+
+# Calculate correlations
+cor_data <- penguins_clean %>%
+  select(bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g) %>%
+  cor() %>%
+  round(2)
+
+# Create heatmap
+plot_ly(
+  x = colnames(cor_data),
+  y = rownames(cor_data),
+  z = cor_data,
+  type = "heatmap",
+  colors = colorRamp(c("#3B4CC0", "#F7F7F7", "#B40426")),
+  text = cor_data,
+  hovertemplate = "%{y} vs %{x}<br>Correlation: %{z}<extra></extra>"
+) %>%
+  layout(
+    xaxis = list(title = "", tickangle = -45),
+    yaxis = list(title = "")
+  )
+```
+
+### Row {height="50%"}
+
+```{r}
+#| label: yearly-trends
+#| title: "Average Body Mass Over Years"
+
+yearly_data <- penguins_clean %>%
+  group_by(year, species) %>%
+  summarise(
+    avg_mass = mean(body_mass_g),
+    se = sd(body_mass_g) / sqrt(n()),
+    .groups = "drop"
+  )
+
+plot_ly(yearly_data, x = ~year, y = ~avg_mass,
+        color = ~species, colors = species_colors,
+        type = "scatter", mode = "lines+markers",
+        error_y = list(array = ~se, color = "#777"),
+        hovertemplate = paste0(
+          "Year: %{x}<br>",
+          "Avg Mass: %{y:.0f} g<br>",
+          "<extra>%{fullData.name}</extra>"
+        )) %>%
+  layout(
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Average Body Mass (g)"),
+    hovermode = "closest",
+    legend = list(
+      orientation = "h",
+      y = -0.2,
+      x = 0.5,
+      xanchor = "center"
+    )
+  )
+```
+
+# Data Table {orientation="fill"}
+
+```{r}
+#| label: data-table
+#| title: "Complete Penguin Dataset"
+
+penguins_clean %>%
+  select(species, island, bill_length_mm, bill_depth_mm,
+         flipper_length_mm, body_mass_g, sex, year) %>%
+  datatable(
+    options = list(
+      pageLength = 20,
+      scrollX = TRUE,
+      searchHighlight = TRUE,
+      dom = 'Bfrtip',
+      buttons = c('copy', 'csv', 'excel')
+    ),
+    filter = 'top',
+    class = 'cell-border stripe hover',
+    colnames = c(
+      "Species", "Island", "Bill Length (mm)", "Bill Depth (mm)",
+      "Flipper Length (mm)", "Body Mass (g)", "Sex", "Year"
+    ),
+    caption = "Interactive table: Click column headers to sort, use filters to search"
+  ) %>%
+  formatRound(columns = c("bill_length_mm", "bill_depth_mm",
+                          "flipper_length_mm"), digits = 1) %>%
+  formatRound(columns = "body_mass_g", digits = 0) %>%
+  formatStyle(
+    "species",
+    backgroundColor = styleEqual(
+      c("Adelie", "Chinstrap", "Gentoo"),
+      c("#FFE5CC", "#E5CCFF", "#CCF2F2")
+    )
+  )
+```

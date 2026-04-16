@@ -1,0 +1,186 @@
+# Quarto Book Configuration
+# Place this as _quarto.yml in your book project root
+
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "R for Data Analysis"
+  subtitle: "A Practical Guide"
+  author: "Author Name"
+  date: today
+
+  # Cover image
+  cover-image: cover.png
+
+  # Book description (for metadata)
+  description: |
+    A comprehensive guide to data analysis using R, covering
+    data manipulation, visualization, and statistical modeling.
+
+  # Book structure
+  chapters:
+    - index.qmd
+    - part: "Getting Started"
+      chapters:
+        - intro.qmd
+        - setup.qmd
+    - part: "Data Manipulation"
+      chapters:
+        - data-import.qmd
+        - data-cleaning.qmd
+        - data-transformation.qmd
+    - part: "Visualization"
+      chapters:
+        - ggplot-basics.qmd
+        - advanced-viz.qmd
+        - interactive-viz.qmd
+    - part: "Statistical Analysis"
+      chapters:
+        - descriptive-stats.qmd
+        - hypothesis-testing.qmd
+        - regression.qmd
+    - part: "Advanced Topics"
+      chapters:
+        - machine-learning.qmd
+        - text-mining.qmd
+        - time-series.qmd
+
+  # Appendices
+  appendices:
+    - appendix-a.qmd
+    - appendix-b.qmd
+    - references.qmd
+
+  # Book navigation
+  page-navigation: true
+  back-to-top-navigation: true
+
+  # Book sidebar
+  sidebar:
+    style: docked
+    search: true
+    collapse-level: 2
+
+  # Repository
+  repo-url: https://github.com/username/book-repo
+  repo-actions: [edit, issue, source]
+
+  # Downloads (uncomment to enable)
+  # downloads: [pdf, epub]
+
+  # Sharing
+  sharing: [twitter, facebook, linkedin]
+
+# Bibliography
+bibliography: references.bib
+csl: apa.csl
+
+# Format configurations
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    code-link: true
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    number-depth: 3
+    code-fold: false
+    code-tools: true
+    smooth-scroll: true
+    link-external-newwindow: true
+    citations-hover: true
+    footnotes-hover: true
+    fig-cap-location: bottom
+    tbl-cap-location: top
+
+  pdf:
+    documentclass: scrbook
+    classoption: [oneside, open=any]
+    papersize: letter
+    fontsize: 11pt
+    geometry:
+      - top=25mm
+      - left=25mm
+      - bottom=25mm
+      - right=25mm
+    toc: true
+    toc-depth: 3
+    number-sections: true
+    colorlinks: true
+    linkcolor: blue
+    urlcolor: blue
+    citecolor: blue
+    keep-tex: true
+
+  epub:
+    cover-image: cover.png
+    toc: true
+
+# Execution options
+execute:
+  echo: true
+  warning: false
+  message: false
+  freeze: auto
+  cache: false
+
+# Cross-reference configuration
+crossref:
+  chapters: true
+  fig-title: "Figure"
+  tbl-title: "Table"
+  eq-title: "Equation"
+
+# Code highlighting
+highlight-style: github
+
+# Editor options
+editor: visual
+
+# Example chapter structure (index.qmd):
+# ---
+# # Preface {.unnumbered}
+#
+# Welcome to this book on data analysis with R...
+#
+# ## Who This Book Is For
+#
+# This book is designed for...
+#
+# ## What You'll Learn
+#
+# - Skill 1
+# - Skill 2
+# - Skill 3
+#
+# ## Prerequisites
+#
+# Basic knowledge of...
+#
+# ## Acknowledgments
+#
+# Thanks to...
+# ---
+
+# Example regular chapter (intro.qmd):
+# ---
+# # Introduction {#sec-intro}
+#
+# ## Why R?
+#
+# Content...
+#
+# ## Getting Help
+#
+# Content...
+#
+# ```{r}
+# # R code examples
+# ```
+#
+# See @fig-example for details.
+# ---

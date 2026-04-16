@@ -1,0 +1,259 @@
+---
+title: "Analytics Dashboard"
+author: "Author Name"
+format: dashboard
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+library(tidyverse)
+library(gt)
+library(DT)
+library(plotly)
+library(bslib)
+library(bsicons)
+
+# Set theme
+theme_set(theme_minimal())
+
+# Load data (using mtcars for demonstration)
+data <- mtcars %>%
+  rownames_to_column(var = "model") %>%
+  as_tibble()
+
+# Calculate KPIs
+total_vehicles <- nrow(data)
+avg_mpg <- mean(data$mpg)
+avg_hp <- mean(data$hp)
+avg_weight <- mean(data$wt)
+```
+
+# Overview {orientation="columns"}
+
+## Column {width="25%"}
+
+```{r}
+#| title: Total Vehicles
+
+value_box(
+  title = "Total Vehicles",
+  value = total_vehicles,
+  showcase = bs_icon("car-front-fill"),
+  theme = "primary"
+)
+```
+
+```{r}
+#| title: Average MPG
+
+value_box(
+  title = "Avg Fuel Efficiency",
+  value = scales::number(avg_mpg, accuracy = 0.1),
+  showcase = bs_icon("fuel-pump"),
+  theme = "success"
+)
+```
+
+```{r}
+#| title: Average Horsepower
+
+value_box(
+  title = "Avg Horsepower",
+  value = scales::number(avg_hp, accuracy = 1),
+  showcase = bs_icon("speedometer"),
+  theme = "warning"
+)
+```
+
+```{r}
+#| title: Average Weight
+
+value_box(
+  title = "Avg Weight (1000 lbs)",
+  value = scales::number(avg_weight, accuracy = 0.1),
+  showcase = bs_icon("truck"),
+  theme = "info"
+)
+```
+
+## Column {width="75%"}
+
+### Row {height="60%"}
+
+```{r}
+#| title: "Fuel Efficiency vs Weight"
+#| padding: 10px
+
+p <- ggplot(data, aes(x = wt, y = mpg, color = as.factor(cyl))) +
+  geom_point(aes(size = hp, text = model), alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  scale_size_continuous(name = "Horsepower") +
+  labs(
+    x = "Weight (1000 lbs)",
+    y = "Miles Per Gallon"
+  ) +
+  theme_minimal()
+
+ggplotly(p, tooltip = c("text", "x", "y"))
+```
+
+### Row {height="40%"}
+
+```{r}
+#| title: "Distribution by Cylinders"
+
+cyl_summary <- data %>%
+  count(cyl) %>%
+  mutate(percentage = n / sum(n) * 100)
+
+plot_ly(cyl_summary,
+        labels = ~paste(cyl, "cyl"),
+        values = ~n,
+        type = "pie",
+        textposition = "inside",
+        textinfo = "label+percent",
+        marker = list(colors = c("#E74C3C", "#3498DB", "#2ECC71"))) %>%
+  layout(showlegend = FALSE)
+```
+
+```{r}
+#| title: "Performance Metrics"
+
+data %>%
+  group_by(cyl) %>%
+  summarise(
+    Count = n(),
+    `Avg MPG` = mean(mpg),
+    `Avg HP` = mean(hp),
+    `Avg Weight` = mean(wt)
+  ) %>%
+  gt() %>%
+  fmt_number(columns = c(`Avg MPG`, `Avg HP`, `Avg Weight`), decimals = 1) %>%
+  cols_label(cyl = "Cylinders") %>%
+  tab_style(
+    style = cell_fill(color = "#F8F9FA"),
+    locations = cells_body()
+  ) %>%
+  opt_row_striping()
+```
+
+# Performance Analysis {orientation="rows"}
+
+## Row {height="50%"}
+
+```{r}
+#| title: "Horsepower Distribution"
+
+ggplot(data, aes(x = hp, fill = as.factor(cyl))) +
+  geom_histogram(binwidth = 20, alpha = 0.7, position = "identity") +
+  scale_fill_brewer(palette = "Set1", name = "Cylinders") +
+  labs(
+    x = "Horsepower",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+#| title: "Quarter Mile Time vs Horsepower"
+
+p2 <- ggplot(data, aes(x = hp, y = qsec, color = as.factor(cyl))) +
+  geom_point(aes(size = wt, text = model), alpha = 0.6) +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  scale_size_continuous(name = "Weight") +
+  labs(
+    x = "Horsepower",
+    y = "Quarter Mile Time (sec)"
+  ) +
+  theme_minimal()
+
+ggplotly(p2, tooltip = c("text", "x", "y"))
+```
+
+## Row {height="50%"}
+
+```{r}
+#| title: "Performance Comparison by Engine Type"
+
+data %>%
+  mutate(
+    cyl = as.factor(cyl),
+    transmission = ifelse(am == 1, "Manual", "Automatic")
+  ) %>%
+  ggplot(aes(x = cyl, y = hp, fill = transmission)) +
+  geom_boxplot(alpha = 0.7) +
+  scale_fill_manual(values = c("#3498DB", "#E74C3C"), name = "Transmission") +
+  labs(
+    x = "Number of Cylinders",
+    y = "Horsepower"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+#| title: "Fuel Efficiency Trends"
+
+data %>%
+  arrange(wt) %>%
+  mutate(vehicle_id = row_number()) %>%
+  ggplot(aes(x = vehicle_id, y = mpg)) +
+  geom_line(color = "#2C3E50", linewidth = 1) +
+  geom_point(aes(color = as.factor(cyl)), size = 3, alpha = 0.7) +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  labs(
+    x = "Vehicle Index (ordered by weight)",
+    y = "Miles Per Gallon"
+  ) +
+  theme_minimal()
+```
+
+# Data Table {orientation="columns"}
+
+## Column
+
+```{r}
+#| title: "Complete Vehicle Data"
+#| padding: 10px
+
+data %>%
+  select(model, mpg, cyl, hp, wt, qsec, am) %>%
+  mutate(
+    am = ifelse(am == 1, "Manual", "Automatic"),
+    mpg = round(mpg, 1),
+    hp = round(hp, 0),
+    wt = round(wt, 2),
+    qsec = round(qsec, 2)
+  ) %>%
+  datatable(
+    options = list(
+      pageLength = 15,
+      scrollX = TRUE,
+      columnDefs = list(
+        list(className = "dt-center", targets = "_all")
+      )
+    ),
+    colnames = c(
+      "Model", "MPG", "Cylinders", "Horsepower",
+      "Weight", "Quarter Mile", "Transmission"
+    ),
+    filter = "top",
+    class = "display"
+  ) %>%
+  formatStyle(
+    "mpg",
+    background = styleColorBar(data$mpg, "#2ECC71"),
+    backgroundSize = "100% 90%",
+    backgroundRepeat = "no-repeat",
+    backgroundPosition = "center"
+  ) %>%
+  formatStyle(
+    "hp",
+    background = styleColorBar(data$hp, "#E74C3C"),
+    backgroundSize = "100% 90%",
+    backgroundRepeat = "no-repeat",
+    backgroundPosition = "center"
+  )
+```

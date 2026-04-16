@@ -1,0 +1,283 @@
+---
+title: "Analysis Report"
+author: "Author Name"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    code-tools: true
+    theme: cosmo
+    df-print: paged
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r setup}
+#| include: false
+
+# Load required packages
+library(tidyverse)
+library(gt)
+library(scales)
+
+# Set global ggplot theme
+theme_set(theme_minimal(base_size = 12))
+
+# Set global chunk options
+knitr::opts_chunk$set(
+  fig.retina = 3,
+  fig.width = 8,
+  fig.asp = 0.618,
+  out.width = "100%"
+)
+```
+
+## Executive Summary
+
+[Brief overview of key findings and recommendations]
+
+## Introduction
+
+### Background
+
+[Context and motivation for the analysis]
+
+### Objectives
+
+[Specific questions or goals]
+
+### Data Sources
+
+[Description of data used]
+
+```{r}
+#| label: data-load
+#| include: false
+
+# Load your data
+# data <- read_csv("data/dataset.csv")
+
+# For demonstration, using built-in dataset
+data <- mtcars %>%
+  rownames_to_column(var = "model") %>%
+  as_tibble()
+```
+
+## Data Overview
+
+### Summary Statistics
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: "Summary statistics of key variables"
+
+data %>%
+  select(mpg, hp, wt, qsec) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "Value") %>%
+  group_by(Variable) %>%
+  summarise(
+    N = n(),
+    Mean = mean(Value),
+    SD = sd(Value),
+    Min = min(Value),
+    Max = max(Value)
+  ) %>%
+  gt() %>%
+  fmt_number(columns = c(Mean, SD, Min, Max), decimals = 2) %>%
+  tab_header(title = "Descriptive Statistics") %>%
+  cols_label(
+    Variable = "Variable",
+    N = "N",
+    Mean = "Mean",
+    SD = "SD",
+    Min = "Min",
+    Max = "Max"
+  )
+```
+
+The data contains `r nrow(data)` observations across `r ncol(data) - 1` variables. See @tbl-summary for detailed statistics.
+
+### Data Quality
+
+```{r}
+#| label: data-quality
+
+# Check for missing values
+missing_data <- data %>%
+  summarise(across(everything(), ~sum(is.na(.)))) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "Missing")
+
+total_missing <- sum(missing_data$Missing)
+```
+
+The dataset has `r total_missing` missing values across all variables.
+
+## Analysis
+
+### Distribution Analysis
+
+```{r}
+#| label: fig-distribution
+#| fig-cap: "Distribution of fuel efficiency (MPG)"
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(data, aes(x = mpg)) +
+  geom_histogram(binwidth = 2, fill = "#2C3E50", alpha = 0.8) +
+  geom_density(aes(y = after_stat(count) * 2),
+               color = "#E74C3C", linewidth = 1) +
+  labs(
+    title = "Distribution of Miles Per Gallon",
+    x = "Miles Per Gallon (MPG)",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+@fig-distribution shows the distribution of fuel efficiency across vehicles.
+
+### Relationship Analysis
+
+```{r}
+#| label: fig-scatter
+#| fig-cap: "Relationship between weight and fuel efficiency"
+#| fig-width: 8
+#| fig-height: 6
+
+ggplot(data, aes(x = wt, y = mpg)) +
+  geom_point(aes(size = hp, color = as.factor(cyl)), alpha = 0.6) +
+  geom_smooth(method = "lm", se = TRUE, color = "#2C3E50") +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  scale_size_continuous(name = "Horsepower") +
+  labs(
+    title = "Weight vs Fuel Efficiency",
+    subtitle = "Colored by number of cylinders, sized by horsepower",
+    x = "Weight (1000 lbs)",
+    y = "Miles Per Gallon (MPG)"
+  ) +
+  theme_minimal()
+```
+
+As shown in @fig-scatter, there is a strong negative relationship between vehicle weight and fuel efficiency.
+
+### Comparative Analysis
+
+```{r}
+#| label: fig-comparison
+#| fig-cap: "Fuel efficiency by number of cylinders"
+#| fig-width: 8
+#| fig-height: 5
+
+data %>%
+  mutate(cyl = as.factor(cyl)) %>%
+  ggplot(aes(x = cyl, y = mpg, fill = cyl)) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  geom_jitter(width = 0.2, alpha = 0.3, show.legend = FALSE) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(
+    title = "Fuel Efficiency by Engine Configuration",
+    x = "Number of Cylinders",
+    y = "Miles Per Gallon (MPG)"
+  ) +
+  theme_minimal()
+```
+
+@fig-comparison reveals clear differences in fuel efficiency across engine configurations.
+
+### Statistical Testing
+
+```{r}
+#| label: statistical-test
+
+# Perform statistical test
+model <- lm(mpg ~ wt + hp, data = data)
+r_squared <- summary(model)$r.squared
+```
+
+A linear regression model explains `r percent(r_squared, accuracy = 0.1)` of the variance in fuel efficiency.
+
+```{r}
+#| label: tbl-regression
+#| tbl-cap: "Regression model results"
+
+broom::tidy(model) %>%
+  gt() %>%
+  fmt_number(columns = c(estimate, std.error, statistic, p.value), decimals = 3) %>%
+  tab_header(title = "Linear Regression Results") %>%
+  cols_label(
+    term = "Variable",
+    estimate = "Estimate",
+    std.error = "Std. Error",
+    statistic = "t-statistic",
+    p.value = "p-value"
+  )
+```
+
+## Key Findings
+
+::: {.callout-note}
+## Summary of Results
+
+1. **Finding 1**: [Description]
+2. **Finding 2**: [Description]
+3. **Finding 3**: [Description]
+:::
+
+## Recommendations
+
+::: {.callout-tip}
+## Actionable Recommendations
+
+1. **Recommendation 1**: [Action item]
+2. **Recommendation 2**: [Action item]
+3. **Recommendation 3**: [Action item]
+:::
+
+## Limitations
+
+::: {.callout-warning}
+## Considerations
+
+- **Limitation 1**: [Description]
+- **Limitation 2**: [Description]
+:::
+
+## Conclusion
+
+[Summary of analysis and next steps]
+
+## Appendix
+
+### Session Information
+
+```{r}
+#| label: session-info
+#| echo: true
+
+sessionInfo()
+```
+
+### Data Dictionary
+
+```{r}
+#| label: tbl-dictionary
+#| tbl-cap: "Variable definitions"
+
+tibble(
+  Variable = c("mpg", "cyl", "hp", "wt", "qsec"),
+  Description = c(
+    "Miles per gallon",
+    "Number of cylinders",
+    "Horsepower",
+    "Weight (1000 lbs)",
+    "Quarter mile time (seconds)"
+  ),
+  Type = c("Numeric", "Integer", "Numeric", "Numeric", "Numeric")
+) %>%
+  gt() %>%
+  tab_header(title = "Data Dictionary")
+```

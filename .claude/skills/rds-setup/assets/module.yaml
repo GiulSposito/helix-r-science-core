@@ -1,0 +1,52 @@
+code: rds
+name: "RDS: R Data Science"
+description: "10-Phase Framework for R Data Science Excellence - From raw data to production deployment"
+module_version: 1.0.0
+default_selected: false
+module_greeting: >
+  🎉 RDS Module Installed Successfully!
+
+  The R Data Science module is now available with 4 specialized agents:
+
+  🏗️  **Ada** (Project Architect) - Setup, Import, Clean
+      Invoke: /ada or "Hey Ada, help me setup a project"
+
+  🔬 **Grace** (Data Scientist) - EDA, Features
+      Invoke: /grace or "Hey Grace, let's explore this data"
+
+  🤖 **Alan** (ML Engineer) - Build, Tune, Evaluate
+      Invoke: /alan or "Hey Alan, I need to build models"
+
+  📊 **Marie** (Communicator) - Report, Deploy
+      Invoke: /marie or "Hey Marie, create a report"
+
+  **Quick Start:**
+  - New project? → Start with Ada
+  - Have clean data? → Start with Grace
+  - Features ready? → Start with Alan
+  - Model trained? → Start with Marie
+
+  **Documentation:** See {project-root}/_bmad/rds/README.md
+
+  Happy data sciencing! 🚀
+
+# RDS-specific paths (inherited from _bmad/rds/config.yaml)
+rds_workflows_path:
+  prompt: "Path for RDS workflows?"
+  default: "{project-root}/_bmad/rds/workflows"
+  result: "{value}"
+
+rds_data_path:
+  prompt: "Path for RDS data resources?"
+  default: "{project-root}/_bmad/rds/data"
+  result: "{value}"
+
+rds_templates_path:
+  prompt: "Path for RDS templates?"
+  default: "{project-root}/_bmad/rds/templates"
+  result: "{value}"
+
+rds_sidecar_memory:
+  prompt: "Path for agent sidecar memory?"
+  default: "{project-root}/_bmad/_memory"
+  result: "{value}"

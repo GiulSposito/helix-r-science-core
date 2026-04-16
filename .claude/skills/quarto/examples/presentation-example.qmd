@@ -1,0 +1,486 @@
+---
+title: "Palmer Penguins Analysis"
+subtitle: "Exploring Antarctic Penguin Populations"
+author: "Data Science Team"
+date: today
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    logo: https://allisonhorst.github.io/palmerpenguins/reference/figures/palmerpenguins.png
+    footer: "Palmer Penguins | 2026"
+    transition: slide
+    background-transition: fade
+    highlight-style: github
+    code-line-numbers: false
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Overview {background-color="#2C5F77"}
+
+::: {.incremental}
+- **Dataset**: Palmer Penguins
+- **Species**: 3 (Adelie, Chinstrap, Gentoo)
+- **Location**: Palmer Archipelago, Antarctica
+- **Years**: 2007-2009
+- **Measurements**: 344 penguins
+:::
+
+::: {.notes}
+This presentation covers our analysis of the Palmer Penguins dataset.
+Key points to emphasize: diversity of species and comprehensive measurements.
+:::
+
+---
+
+## Research Questions
+
+::: {.columns}
+::: {.column width="50%"}
+### Morphology
+- Species differences
+- Sexual dimorphism
+- Measurement correlations
+:::
+
+::: {.column width="50%"}
+### Distribution
+- Island populations
+- Temporal trends
+- Geographic patterns
+:::
+:::
+
+::: {.fragment}
+::: {.callout-note}
+All analyses focus on understanding the ecological patterns across three distinct penguin species.
+:::
+:::
+
+---
+
+## Data Setup {auto-animate="true"}
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+```
+
+::: {.notes}
+We'll start by loading our required packages.
+:::
+
+---
+
+## Data Setup {auto-animate="true"}
+
+```{r}
+library(tidyverse)
+library(palmerpenguins)
+
+# Color palette for species
+species_colors <- c(
+  "Adelie" = "#FF8C00",
+  "Chinstrap" = "#A034F0",
+  "Gentoo" = "#159090"
+)
+```
+
+---
+
+## Dataset Structure
+
+```{r}
+glimpse(penguins)
+```
+
+---
+
+## Species Distribution {.smaller}
+
+::: {.panel-tabset}
+
+### Plot
+
+```{r}
+#| echo: false
+#| fig-width: 9
+#| fig-height: 5
+
+penguins %>%
+  drop_na(species, island) %>%
+  count(species, island) %>%
+  ggplot(aes(x = island, y = n, fill = species)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(aes(label = n),
+            position = position_dodge(width = 0.7),
+            vjust = -0.5, size = 5) +
+  scale_fill_manual(values = species_colors) +
+  labs(
+    title = "Penguin Distribution Across Islands",
+    x = "Island",
+    y = "Number of Penguins",
+    fill = "Species"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    legend.position = "top",
+    plot.title.position = "plot"
+  )
+```
+
+### Code
+
+```{r}
+#| eval: false
+#| code-line-numbers: "|2|3|4|5-7"
+
+penguins %>%
+  drop_na(species, island) %>%
+  count(species, island) %>%
+  ggplot(aes(x = island, y = n, fill = species)) +
+  geom_col(position = "dodge", width = 0.7) +
+  geom_text(aes(label = n),
+            position = position_dodge(width = 0.7),
+            vjust = -0.5, size = 5)
+```
+
+### Key Findings
+
+- **Biscoe**: Primarily Gentoo, some Adelie
+- **Dream**: Mix of Adelie and Chinstrap
+- **Torgersen**: Exclusively Adelie
+- Gentoo penguins are the most numerous overall
+
+:::
+
+::: {.notes}
+Notice how each island has a unique composition of species.
+Torgersen has only Adelie, making it ecologically distinct.
+:::
+
+---
+
+## Body Mass Distribution {background-image="https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png" background-opacity="0.1"}
+
+::: {.columns}
+::: {.column width="60%"}
+```{r}
+#| echo: false
+#| fig-width: 7
+#| fig-height: 5.5
+
+penguins %>%
+  drop_na(body_mass_g, species) %>%
+  ggplot(aes(x = species, y = body_mass_g, fill = species)) +
+  geom_violin(alpha = 0.6, draw_quantiles = c(0.5)) +
+  geom_jitter(width = 0.2, alpha = 0.2) +
+  scale_fill_manual(values = species_colors) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Body Mass by Species",
+    x = "Species",
+    y = "Body Mass (g)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "none")
+```
+:::
+
+::: {.column width="40%"}
+### Statistics
+
+```{r}
+#| echo: false
+
+penguins %>%
+  drop_na(body_mass_g) %>%
+  group_by(species) %>%
+  summarise(
+    Mean = round(mean(body_mass_g)),
+    SD = round(sd(body_mass_g)),
+    N = n()
+  ) %>%
+  knitr::kable()
+```
+
+::: {.fragment}
+Gentoo penguins are significantly larger!
+:::
+:::
+:::
+
+---
+
+## Key Relationship {.smaller}
+
+### Flipper Length vs Body Mass
+
+```{r}
+#| echo: false
+#| fig-width: 10
+#| fig-height: 5
+
+penguins %>%
+  drop_na(flipper_length_mm, body_mass_g, species) %>%
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
+  geom_point(size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = TRUE, linewidth = 1.5) +
+  scale_color_manual(values = species_colors) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 14)
+  )
+```
+
+::: {.fragment}
+Strong positive correlation across all species (R² > 0.75)
+:::
+
+---
+
+## Bill Dimensions
+
+::: {.columns}
+::: {.column width="50%"}
+```{r}
+#| echo: false
+#| fig-width: 6
+#| fig-height: 6
+
+penguins %>%
+  drop_na(bill_length_mm, bill_depth_mm, species) %>%
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm,
+             color = species)) +
+  geom_point(size = 3, alpha = 0.7) +
+  stat_ellipse(level = 0.95, linewidth = 1.2) +
+  scale_color_manual(values = species_colors) +
+  labs(
+    x = "Bill Length (mm)",
+    y = "Bill Depth (mm)",
+    color = "Species"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(legend.position = "top")
+```
+:::
+
+::: {.column width="50%"}
+::: {.incremental}
+### Observations
+
+- Clear species separation
+- Adelie: shorter, deeper bills
+- Chinstrap: longer, narrower bills
+- Gentoo: intermediate dimensions
+- Minimal overlap between species
+:::
+:::
+:::
+
+---
+
+## Sexual Dimorphism {.scrollable}
+
+```{r}
+#| echo: false
+#| fig-width: 11
+#| fig-height: 6
+
+penguins %>%
+  drop_na(body_mass_g, sex, species) %>%
+  ggplot(aes(x = species, y = body_mass_g, fill = sex)) +
+  geom_boxplot(alpha = 0.7, width = 0.6) +
+  scale_fill_manual(values = c("male" = "#1E88E5", "female" = "#E91E63")) +
+  scale_y_continuous(labels = scales::comma) +
+  labs(
+    title = "Body Mass by Species and Sex",
+    x = "Species",
+    y = "Body Mass (g)",
+    fill = "Sex"
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    legend.position = "top",
+    legend.text = element_text(size = 14)
+  )
+```
+
+::: {.fragment}
+Males consistently heavier than females across all species
+:::
+
+---
+
+## Statistical Summary {.smaller}
+
+```{r}
+#| echo: false
+
+penguins %>%
+  drop_na(body_mass_g, sex, species) %>%
+  group_by(species, sex) %>%
+  summarise(
+    N = n(),
+    `Mean Mass (g)` = round(mean(body_mass_g)),
+    `SD (g)` = round(sd(body_mass_g)),
+    .groups = "drop"
+  ) %>%
+  knitr::kable()
+```
+
+::: {.fragment}
+::: {.callout-important}
+Sex differences range from 500-900g (12-18% of body mass)
+:::
+:::
+
+---
+
+## Interactive Exploration {.smaller}
+
+```{r}
+#| echo: false
+
+library(plotly)
+
+p <- penguins %>%
+  drop_na() %>%
+  ggplot(aes(x = flipper_length_mm, y = body_mass_g,
+             color = species, shape = sex)) +
+  geom_point(size = 3, alpha = 0.7) +
+  scale_color_manual(values = species_colors) +
+  labs(
+    x = "Flipper Length (mm)",
+    y = "Body Mass (g)",
+    color = "Species",
+    shape = "Sex"
+  ) +
+  theme_minimal(base_size = 12)
+
+ggplotly(p, height = 450)
+```
+
+::: {.notes}
+Hover over points to see details. Notice the clustering by species and sex.
+:::
+
+---
+
+## Key Findings {background-color="#2C5F77"}
+
+::: {.incremental style="font-size: 0.9em;"}
+1. **Species Differentiation**: Clear morphological distinctions across all measurements
+
+2. **Size Hierarchy**: Gentoo > Chinstrap > Adelie in most measurements
+
+3. **Sexual Dimorphism**: Consistent male-larger pattern (12-18% difference)
+
+4. **Strong Correlations**: Flipper length and body mass highly correlated (R² > 0.75)
+
+5. **Bill Specialization**: Species-specific bill shapes suggest dietary differences
+
+6. **Geographic Separation**: Island distributions vary by species
+:::
+
+---
+
+## Implications {.smaller}
+
+::: {.columns}
+::: {.column width="50%"}
+### Ecological
+
+- Niche partitioning
+- Resource competition
+- Habitat preferences
+- Breeding patterns
+:::
+
+::: {.column width="50%"}
+### Research
+
+- Climate change impacts
+- Population monitoring
+- Conservation strategies
+- Long-term trends
+:::
+:::
+
+::: {.fragment}
+::: {.callout-tip}
+## Next Steps
+Investigate temporal trends and environmental correlates of body size variation
+:::
+:::
+
+---
+
+## Code Availability
+
+::: {.columns}
+::: {.column width="50%"}
+### R Package
+```r
+install.packages("palmerpenguins")
+library(palmerpenguins)
+data(penguins)
+```
+:::
+
+::: {.column width="50%"}
+### Documentation
+- [Package Website](https://allisonhorst.github.io/palmerpenguins/)
+- [CRAN Page](https://cran.r-project.org/package=palmerpenguins)
+- [GitHub Repo](https://github.com/allisonhorst/palmerpenguins)
+:::
+:::
+
+---
+
+## Acknowledgments {background-color="#2C5F77"}
+
+::: {style="font-size: 0.9em;"}
+**Data Collection**
+
+- Dr. Kristen Gorman
+- Palmer Station, Antarctica LTER
+- Long Term Ecological Research Network
+
+**Data Package**
+
+- Allison Horst
+- Alison Hill
+- Kristen Gorman
+
+**Artwork**
+
+- Allison Horst (@allison_horst)
+:::
+
+---
+
+## Thank You! {background-color="#2C5F77" background-image="https://allisonhorst.github.io/palmerpenguins/reference/figures/lter_penguins.png" background-opacity="0.2"}
+
+::: {style="font-size: 1.5em; text-align: center; margin-top: 150px;"}
+Questions?
+:::
+
+::: {style="text-align: center; margin-top: 50px;"}
+[allisonhorst.github.io/palmerpenguins](https://allisonhorst.github.io/palmerpenguins/)
+
+📧 contact@example.com
+🐦 @dataanalyst
+:::

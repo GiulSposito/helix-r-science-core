@@ -1,0 +1,333 @@
+---
+title: "Presentation Title"
+subtitle: "Subtitle"
+author: "Author Name"
+date: today
+format:
+  revealjs:
+    theme: dark
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    logo: ""
+    footer: "Footer text"
+    incremental: false
+    code-line-numbers: true
+    code-overflow: wrap
+    highlight-style: github
+---
+
+```{r setup}
+#| include: false
+
+library(tidyverse)
+library(gt)
+library(plotly)
+
+# Set global theme
+theme_set(theme_minimal(base_size = 16))
+
+# Load data
+data <- mtcars %>%
+  rownames_to_column(var = "model") %>%
+  as_tibble()
+```
+
+# Introduction {background-color="#2C3E50"}
+
+## Overview
+
+::: {.incremental}
+- **Point 1**: First key point
+- **Point 2**: Second key point
+- **Point 3**: Third key point
+:::
+
+::: {.notes}
+Speaker notes go here - not visible to audience.
+Remember to emphasize the key findings.
+:::
+
+## Objectives
+
+::: {.callout-note}
+## Research Questions
+
+1. What is the relationship between variables?
+2. How do different groups compare?
+3. What patterns emerge from the data?
+:::
+
+# Background {background-color="#34495E"}
+
+## Context
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Left Column**
+
+- Point one
+- Point two
+- Point three
+:::
+
+::: {.column width="50%"}
+**Right Column**
+
+- Additional context
+- Supporting information
+- Key details
+:::
+
+::::
+
+## Literature Review
+
+> "Relevant quote or finding from literature"
+>
+> --- Author Name
+
+::: {.fragment}
+This finding is important because...
+:::
+
+# Methodology {background-color="#2C3E50"}
+
+## Data Collection
+
+```{r}
+#| echo: true
+#| code-line-numbers: "|1|2-3|4-5"
+
+# Load and prepare data
+data_clean <- data %>%
+  select(model, mpg, hp, wt, cyl) %>%
+  filter(!is.na(mpg)) %>%
+  mutate(efficiency = mpg / wt)
+```
+
+## Sample Description
+
+```{r}
+#| label: tbl-sample
+#| tbl-cap: "Sample characteristics"
+
+data %>%
+  summarise(
+    N = n(),
+    `Mean MPG` = mean(mpg),
+    `SD MPG` = sd(mpg),
+    `Mean HP` = mean(hp),
+    `SD HP` = sd(hp)
+  ) %>%
+  gt() %>%
+  fmt_number(columns = everything(), decimals = 1) %>%
+  tab_header(title = "Sample Statistics")
+```
+
+## Analysis Approach
+
+::: {.r-stack}
+![](image1.png){.fragment width="450"}
+
+![](image2.png){.fragment width="450"}
+
+![](image3.png){.fragment width="450"}
+:::
+
+# Results {background-color="#34495E"}
+
+## Key Finding 1
+
+```{r}
+#| label: fig-result1
+#| fig-cap: "Distribution of fuel efficiency"
+#| output-location: column
+
+ggplot(data, aes(x = mpg)) +
+  geom_histogram(binwidth = 2,
+                 fill = "#3498DB",
+                 alpha = 0.8) +
+  labs(
+    x = "Miles Per Gallon",
+    y = "Count"
+  ) +
+  theme_minimal(base_size = 14)
+```
+
+::: {.notes}
+Note the distribution pattern - most vehicles cluster around 15-20 MPG.
+:::
+
+## Key Finding 2 {.smaller}
+
+```{r}
+#| label: fig-result2
+#| fig-cap: "Relationship between weight and efficiency"
+#| fig-width: 8
+#| fig-height: 5
+
+p <- ggplot(data, aes(x = wt, y = mpg, color = as.factor(cyl))) +
+  geom_point(size = 3, alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  labs(
+    x = "Weight (1000 lbs)",
+    y = "Miles Per Gallon"
+  ) +
+  theme_minimal(base_size = 14)
+
+ggplotly(p)
+```
+
+## Key Finding 3
+
+::: {layout-ncol=2}
+```{r}
+#| fig-cap: "By cylinder count"
+
+ggplot(data, aes(x = as.factor(cyl), y = mpg, fill = as.factor(cyl))) +
+  geom_boxplot(alpha = 0.7, show.legend = FALSE) +
+  scale_fill_brewer(palette = "Set2") +
+  labs(x = "Cylinders", y = "MPG") +
+  theme_minimal(base_size = 14)
+```
+
+```{r}
+#| fig-cap: "By horsepower"
+
+ggplot(data, aes(x = hp, y = mpg)) +
+  geom_point(size = 3, alpha = 0.6, color = "#E74C3C") +
+  geom_smooth(method = "loess", color = "#2C3E50") +
+  labs(x = "Horsepower", y = "MPG") +
+  theme_minimal(base_size = 14)
+```
+:::
+
+## Statistical Results
+
+```{r}
+#| echo: true
+#| output-location: fragment
+
+# Fit regression model
+model <- lm(mpg ~ wt + hp + cyl, data = data)
+
+# Display summary
+broom::tidy(model) %>%
+  select(term, estimate, p.value) %>%
+  gt() %>%
+  fmt_number(columns = c(estimate, p.value), decimals = 3)
+```
+
+# Discussion {background-color="#2C3E50"}
+
+## Interpretation
+
+::: {.callout-important}
+## Key Takeaway
+
+The analysis reveals a strong negative relationship between vehicle weight and fuel efficiency, with engine configuration playing a significant role.
+:::
+
+## Comparison with Literature
+
+:::: {.columns}
+
+::: {.column width="40%"}
+**Our Findings**
+
+- Finding A
+- Finding B
+- Finding C
+:::
+
+::: {.column width="60%"}
+**Literature**
+
+- Similar result from Study X
+- Contrasting finding from Study Y
+- New contribution to field
+:::
+
+::::
+
+## Limitations
+
+::: {.callout-warning}
+## Considerations
+
+1. **Sample size**: Limited to `r nrow(data)` vehicles
+2. **Data age**: Historical dataset from 1974
+3. **Scope**: Only covers specific vehicle types
+:::
+
+# Conclusion {background-color="#34495E"}
+
+## Summary
+
+::: {.r-fit-text}
+Main findings in brief
+:::
+
+::: {.incremental}
+1. **Finding 1**: Weight strongly predicts fuel efficiency
+2. **Finding 2**: Cylinder count affects performance
+3. **Finding 3**: Modern implications for vehicle design
+:::
+
+## Implications
+
+::: {.callout-tip}
+## Practical Applications
+
+- Application in industry
+- Policy recommendations
+- Future research directions
+:::
+
+## Future Work
+
+::: {.fragment .fade-in}
+**Next Steps**
+
+1. Expand sample to modern vehicles
+2. Include electric vehicles in analysis
+3. Examine regional differences
+:::
+
+# Thank You! {background-color="#2C3E50"}
+
+::: {.r-fit-text}
+Questions?
+:::
+
+**Contact Information**
+
+- Email: author@example.com
+- Website: https://example.com
+- GitHub: @username
+
+## References {.smaller}
+
+::: {#refs}
+:::
+
+---
+
+## Appendix: Additional Analysis
+
+```{r}
+#| label: fig-appendix
+#| fig-cap: "Supplementary visualization"
+
+ggplot(data, aes(x = qsec, y = mpg, color = as.factor(cyl))) +
+  geom_point(size = 3, alpha = 0.6) +
+  scale_color_brewer(palette = "Set1", name = "Cylinders") +
+  labs(
+    x = "Quarter Mile Time (seconds)",
+    y = "Miles Per Gallon"
+  ) +
+  theme_minimal(base_size = 14)
+```
