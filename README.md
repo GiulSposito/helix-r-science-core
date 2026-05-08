@@ -1,8 +1,8 @@
-# HelixDS Science Core
+# HelixDS R Science Core
 
-> A comprehensive agentic powered ecosystem for data science excellence in R
+> A comprehensive agentic ecosystem for data science excellence in R for Claude Code.
 
-**Version:** 0.5.0  
+**Version:** 1.0.0  
 **Status:** Production Ready  
 **Maintainer:** Giuliano Sposito
 
@@ -10,7 +10,7 @@
 
 ## Overview
 
-HelixDS Science Core is a production-ready data science framework that combines the power of agents with specialized R expertise. This repository provides an integrated environment featuring AI-powered agents, structured workflows, and best-practice guidance for the complete data science lifecycle, to bring week of data analysis to minutes.
+HelixDS Science Core is a production-ready data science framework that combines the power of BMad (Better Model, Advance Development) with specialized R expertise. This repository provides an integrated environment featuring AI-powered agents, structured workflows, and best-practice guidance for the complete data science lifecycle.
 
 ![Helix Logo](helix_logo.png)
 
@@ -35,19 +35,13 @@ HelixDS Science Core is a production-ready data science framework that combines 
 
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/GiulSposito/helix-r-science-core
-   cd helix-r-science-core
+   git clone <repository-url>
+   cd science-core
    ```
 
-2. **Copy your data:**
+2. **Install the RDS module:**
    ```
-   mkdir input
-   cp ~/origin/mydata.csv ./input
-   ```
-
-3. **Start Claude Code**
-   ```
-   claude --dangerously-skip-permissions
+   /rds-setup
    ```
 
 3. **Start your first project:**
@@ -122,7 +116,7 @@ Expert in Quarto reporting, Shiny dashboards, and Vetiver API deployment.
 
 ### 🔄 13 Production-Ready Workflows
 
-| Workflow | Traditional Duration | Use Case |
+| Workflow | Duration | Use Case |
 |----------|----------|----------|
 | **full-lifecycle** | 2-4 weeks | Complete pipeline from zero to production |
 | **quick-eda** | 4-8 hours | Fast exploration and prototyping |
@@ -212,19 +206,19 @@ Senior Data Scientist receives churn data Monday, needs prototype by Friday.
 
 ---
 
-### Scenario 2: Full Production Pipeline
+### Scenario 2: Full Production Pipeline (2-3 weeks)
 
 ML Engineer needs demand forecasting in production.
 
-- **Fase 1:** Ada setup, Grace deep EDA + 47 features
-- **Fase 2:** Alan tests 4 models, Bayesian tuning (50 iterations)
-- **Fase 3:** Alan evaluation, Marie report + Vetiver API deployment
+- **Week 1:** Ada setup, Grace deep EDA + 47 features
+- **Week 2:** Alan tests 4 models, Bayesian tuning (50 iterations)
+- **Week 3:** Alan evaluation, Marie report + Vetiver API deployment
 
 **Result:** Production model, monitored, stakeholder-approved
 
 ---
 
-### Scenario 3: EDA Exploration 
+### Scenario 3: EDA Exploration (3-4 hours)
 
 Analyst explores sales data (100k transactions, 5 stores).
 
@@ -236,6 +230,8 @@ Analyst explores sales data (100k transactions, 5 stores).
 /marie
 [ER]  # Executive HTML report
 ```
+
+**Result:** 3 hours, actionable insights, structured workflow
 
 ---
 
@@ -298,7 +294,7 @@ Agents can hand off to each other:
 
 ### Workflow Selection Guide
 
-| Your Situation | Recommended Workflow | Tradicional Duration |
+| Your Situation | Recommended Workflow | Duration |
 |----------------|---------------------|----------|
 | Starting from scratch | full-lifecycle | 2-4 weeks |
 | Quick exploration needed | quick-eda | 4-8 hours |
@@ -315,10 +311,21 @@ Agents can hand off to each other:
 ### RDS Module Commands
 
 ```bash
+/rds-setup              # Install RDS module
 /ada                    # Invoke Ada (Project Architect)
 /grace                  # Invoke Grace (Data Scientist)
 /alan                   # Invoke Alan (ML Engineer)
 /marie                  # Invoke Marie (Communicator)
+```
+
+### BMad Skills
+
+```bash
+/bmad-agent-builder     # Build custom agents
+/bmad-workflow-builder  # Design workflows
+/bmad-module-builder    # Package modules
+/bmad-brainstorming     # Ideation sessions
+/bmad-party-mode        # Multi-agent discussions
 ```
 
 ### R Expertise
@@ -386,7 +393,7 @@ ls _bmad/rds/workflows/
 
 ## Credits
 
-**Created by:** Gsposito  
+**Created by:** Giuliano Sposito (gsposito@ciandt.com)  
 **Built with:** BMad Module Builder  
 **Powered by:** Claude Code
 
