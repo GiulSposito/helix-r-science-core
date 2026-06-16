@@ -397,3 +397,9 @@ workflows/artifacts/
 
 # Keep .gitkeep files to preserve empty directories
 !**/.gitkeep
+
+# ===========================
+# temp/work dir
+# ===========================
+
+docs/
