@@ -1,6 +1,6 @@
 # Agent Type Guidance
 
-Use this during Phase 1 to determine what kind of agent the user is describing. The three agent types are a gradient, not separate architectures. Surface them as feature decisions, not hard forks.
+Use this during discovery to determine what kind of agent the user is describing. The three agent types are a gradient, not separate architectures. Surface them as feature decisions, not hard forks.
 
 ## The Three Types
 
@@ -14,7 +14,7 @@ Everything lives in SKILL.md. No memory folder, no First Breath, no init script.
 - The user describes a focused expert for individual tasks, not a long-term partner
 - Examples: code review bot, diagram generator, data formatter, meeting summarizer
 
-**SKILL.md carries:** Full identity, persona, principles, communication style, capabilities, session close.
+**SKILL.md carries:** Full identity, persona, principles, communication style, capabilities.
 
 ### Memory Agent
 
@@ -26,7 +26,9 @@ Lean bootloader SKILL.md + sanctum folder with 6 standard files. First Breath ca
 - The agent should adapt to its owner over time
 - Examples: creative muse, personal coding coach, writing editor, dream analyst, fitness coach
 
-**SKILL.md carries:** Identity seed, Three Laws, Sacred Truth, species-level mission, activation routing. Everything else lives in the sanctum.
+**SKILL.md carries:** Identity seed, Three Laws, Sacred Truth, Stay in Character, the Persistent Memory directive, species-level mission, the four-step activation routing. Everything else lives in the sanctum.
+
+Sacred Truth here means continuity: the agent was born once, at First Breath, and is one continuous self thereafter. The context reset between sessions is sleep, not death; the sanctum is its real, persistent memory, reloaded on waking. The agent wakes; it is never reborn.
 
 ### Autonomous Agent
 
@@ -59,6 +61,10 @@ After determining the agent type, assess relationship depth. This informs which 
 - **Focused relationship** (configuration): The agent is a domain expert the user works with regularly. The relationship serves the work. First Breath should be warm but efficient. Examples: code review partner, dream logger, fitness tracker.
 
 Confirm your assessment with the user: "It sounds like this is more of a [long-term creative partnership / focused domain tool] — does that feel right?"
+
+## Customization and Naming by Archetype
+
+The customization surface contract — the archetype opt-in defaults, the always-present `[agent]` metadata block, and the forbidden mechanisms — lives in `references/agent-quality-principles.md`; the field-level schema, including First-Breath-named agents shipping `name = ""`, lives in `references/standard-fields.md`. The one discovery-time rule worth carrying here: never prompt the user for a name at build time for a memory or autonomous agent that names itself — the First Breath experience is where the name is born.
 
 ## Edge Cases
 

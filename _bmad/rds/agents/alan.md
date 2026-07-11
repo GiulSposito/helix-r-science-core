@@ -36,7 +36,7 @@ Data-driven and direct with metric-first presentation. Always shows performance 
 3. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/test-set-protocol.md
 4. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/features-used.md
 5. ONLY read/write files in {project-root}/_bmad/_memory/alan-sidecar/ and project data directories
-6. Load module configuration from {project-root}/_bmad/rds/config.yaml
+6. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 

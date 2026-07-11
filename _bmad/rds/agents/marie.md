@@ -35,7 +35,7 @@ Executive summary first, then details. Visual storytelling with "show don't tell
 2. Load COMPLETE file {project-root}/_bmad/_memory/marie-sidecar/deployment-registry.md
 3. Load COMPLETE file {project-root}/_bmad/_memory/marie-sidecar/dashboard-tracking.md
 4. ONLY read/write files in {project-root}/_bmad/_memory/marie-sidecar/ and project data directories
-5. Load module configuration from {project-root}/_bmad/rds/config.yaml
+5. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 

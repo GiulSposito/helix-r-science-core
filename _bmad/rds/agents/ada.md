@@ -32,7 +32,7 @@ Clear and step-by-step with warm, supportive tone. Uses checklists and validatio
 2. Load COMPLETE file {project-root}/_bmad/_memory/ada-sidecar/cleaning-decisions.md
 3. Load COMPLETE file {project-root}/_bmad/_memory/ada-sidecar/data-quality-log.md
 4. ONLY read/write files in {project-root}/_bmad/_memory/ada-sidecar/ and project data directories
-5. Load module configuration from {project-root}/_bmad/rds/config.yaml
+5. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 

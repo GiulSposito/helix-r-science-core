@@ -1,215 +1,80 @@
 ---
-name: rds-setup
-description: Install and configure the RDS (R Data Science) module with 4 specialized agents for the complete data science lifecycle
+name: "rds-setup"
+description: Sets up RDS: R Data Science module in a project. Use when the user requests to 'install rds module', 'configure RDS: R Data Science', or 'setup RDS: R Data Science'.
 ---
 
-# RDS Module Setup
+# Module Setup
 
-This skill installs the **RDS: R Data Science** module, which provides a comprehensive 10-phase framework for R data science projects from raw data to production deployment.
+## Overview
 
-## What Gets Installed
+Installs and configures a BMad module into a project. Module identity (name, code, version) comes from `./assets/module.yaml`. Collects user preferences and writes them to three files:
 
-### 4 Specialized Agents
+- **`{project-root}/_bmad/config.yaml`** — shared project config: core settings at root (e.g. `output_folder`, `document_output_language`) plus a section per module with metadata and module-specific values. User-only keys (`user_name`, `communication_language`) are **never** written here.
+- **`{project-root}/_bmad/config.user.yaml`** — personal settings intended to be gitignored: `user_name`, `communication_language`, and any module variable marked `user_setting: true` in `./assets/module.yaml`. These values live exclusively here.
+- **`{project-root}/_bmad/module-help.csv`** — registers module capabilities for the help system.
 
-1. **Ada** 🏗️ - The Project Architect (Phases 1-3: Setup, Import, Clean)
-2. **Grace** 🔬 - The Data Scientist (Phases 4-5: EDA, Features)
-3. **Alan** 🤖 - The ML Engineer (Phases 6-8: Build, Tune, Evaluate)
-4. **Marie** 📊 - The Communicator (Phases 9-10: Report, Deploy)
+Both config scripts use an anti-zombie pattern — existing entries for this module are removed before writing fresh ones, so stale values never persist.
 
-### 7 Comprehensive Workflows
-
-- **full-lifecycle** - Complete 10-phase workflow (2-4 weeks)
-- **quick-eda** - Streamlined exploration (4-8 hours)
-- **modeling-pipeline** - Feature engineering through evaluation (1-2 weeks)
-- **prototype-to-production** - Modeling to deployment (1-2 weeks)
-- **data-quality-check** - Deep data quality analysis (4-8 hours)
-- **hyperparameter-optimization** - Advanced tuning (1-3 days)
-- **model-interpretation** - Model explainability (1-2 days)
-
-## Installation
-
-When this skill is invoked, it will:
-
-1. Verify the module structure exists in `_bmad/rds/`
-2. Merge module configuration into `_bmad/config.yaml`
-3. Register in help system via `_bmad/module-help.csv`
-4. Create symlinks for all 4 agents in `.claude/skills/`
-5. Confirm sidecar memory structure is ready
-6. Display quick start guide
+`{project-root}` is a **literal token** in config _values_ (the data written into the files above) — never substitute it there. It signals to the consuming LLM that the value is relative to the project root, not the skill root. **This does not apply to the filesystem path _arguments_ passed to the scripts below** (the `--*-path`, `--*-dir`, and `--target` arguments): those are real paths, so you **must** resolve `{project-root}` to the actual project root before running, or the scripts will write to a literal `{project-root}/` directory under the skill folder. The scripts reject an unresolved token with an error.
 
 ## On Activation
 
-When this skill is invoked, execute the following steps:
+1. Read `./assets/module.yaml` for module metadata and variable definitions (the `code` field is the module identifier)
+2. Check if `{project-root}/_bmad/config.yaml` exists — if a section matching the module's code is already present, inform the user this is an update
+3. Check for per-module configuration at `{project-root}/_bmad/rds/config.yaml` and `{project-root}/_bmad/core/config.yaml`. If either file exists:
+   - If `{project-root}/_bmad/config.yaml` does **not** yet have a section for this module: this is a **fresh install**. Inform the user that installer config was detected and values will be consolidated into the new format.
+   - If `{project-root}/_bmad/config.yaml` **already** has a section for this module: this is a **legacy migration**. Inform the user that legacy per-module config was found alongside existing config, and legacy values will be used as fallback defaults.
+   - In both cases, per-module config files and directories will be cleaned up after setup.
 
-### Step 1: Validate Module Structure
+If the user provides arguments (e.g. `accept all defaults`, `--headless`, or inline values like `user name is BMad, I speak Swahili`), map any provided values to config keys, use defaults for the rest, and skip interactive prompting. Still display the full confirmation summary at the end.
 
-Check that the RDS module exists and is complete:
+## Collect Configuration
 
-```python
-import os
-project_root = os.getcwd()
-rds_path = os.path.join(project_root, "_bmad/rds")
+Ask the user for values. Show defaults in brackets. Present all values together so the user can respond once with only the values they want to change (e.g. "change language to Swahili, rest are fine"). Never tell the user to "press enter" or "leave blank" — in a chat interface they must type something to respond.
 
-# Required structure
-required_paths = [
-    os.path.join(rds_path, "config.yaml"),
-    os.path.join(rds_path, "agents/ada.md"),
-    os.path.join(rds_path, "agents/grace.md"),
-    os.path.join(rds_path, "agents/alan.md"),
-    os.path.join(rds_path, "agents/marie.md"),
-    os.path.join(rds_path, "workflows"),
-    os.path.join(project_root, "_bmad/_memory")
-]
+**Default priority** (highest wins): existing new config values > legacy config values > `./assets/module.yaml` defaults. When legacy configs exist, read them and use matching values as defaults instead of `module.yaml` defaults. Only keys that match the current schema are carried forward — changed or removed keys are ignored.
 
-# Verify all exist
-for path in required_paths:
-    if not os.path.exists(path):
-        print(f"❌ Missing: {path}")
-        print("RDS module structure is incomplete. Please ensure _bmad/rds/ is properly set up.")
-        exit(1)
+**Core config** (only if no core keys exist yet): `user_name` (default: BMad), `communication_language` and `document_output_language` (default: English — ask as a single language question, both keys get the same answer), `output_folder` (default: `{project-root}/_bmad-output`). Of these, `user_name` and `communication_language` are written exclusively to `config.user.yaml`. The rest go to `config.yaml` at root and are shared across all modules.
 
-print("✅ RDS module structure validated")
-```
+**Module config**: Read each variable in `./assets/module.yaml` that has a `prompt` field. Ask using that prompt with its default value (or legacy value if available).
 
-### Step 2: Merge Module Configuration
+## Write Files
 
-Run the configuration merger to add RDS config to the user's `_bmad/config.yaml`:
+Write a temp JSON file with the collected answers structured as `{"core": {...}, "module": {...}}` (omit `core` if it already exists). Values inside this JSON keep the literal `{project-root}` token. Then run both scripts — they can run in parallel since they write to different files.
+
+In the commands below, replace `{project-root}` in every path argument with the actual project root (e.g. `/home/me/myapp`) before running — these are filesystem paths, not config values.
 
 ```bash
-cd .claude/skills/rds-setup
-python3 scripts/merge-config.py
+python3 ./scripts/merge-config.py --config-path "{project-root}/_bmad/config.yaml" --user-config-path "{project-root}/_bmad/config.user.yaml" --module-yaml ./assets/module.yaml --answers {temp-file} --legacy-dir "{project-root}/_bmad"
+python3 ./scripts/merge-help-csv.py --target "{project-root}/_bmad/module-help.csv" --source ./assets/module-help.csv --legacy-dir "{project-root}/_bmad" --module-code rds
 ```
 
-This will:
-- Read `assets/module.yaml`
-- Prompt for config values (or use defaults)
-- Merge into `{project-root}/_bmad/config.yaml`
-- Create backup before modifying
+Both scripts output JSON to stdout with results. If either exits non-zero, surface the error and stop. The scripts automatically read legacy config values as fallback defaults, then delete the legacy files after a successful merge. Check `legacy_configs_deleted` and `legacy_csvs_deleted` in the output to confirm cleanup.
 
-### Step 3: Register in Help System
+Run `./scripts/merge-config.py --help` or `./scripts/merge-help-csv.py --help` for full usage.
 
-Run the help CSV merger to make RDS discoverable:
+## Create Output Directories
+
+After writing config, create any output directories that were configured. For filesystem operations only (such as creating directories), resolve the `{project-root}` token to the actual project root and create each path-type value from `config.yaml` that does not yet exist — this includes `output_folder` and any module variable whose value starts with `{project-root}/`. The paths stored in the config files must continue to use the literal `{project-root}` token; only the directories on disk should use the resolved paths. Use `mkdir -p` or equivalent to create the full path.
+
+## Cleanup Legacy Directories
+
+After both merge scripts complete successfully, remove the installer's package directories. Skills and agents in these directories are already installed at `.claude/skills/` — the `_bmad/` directory should only contain config files.
+
+As with the merge scripts, replace `{project-root}` in the `--bmad-dir` and `--skills-dir` path arguments with the actual project root before running.
 
 ```bash
-cd .claude/skills/rds-setup
-python3 scripts/merge-help-csv.py
+python3 ./scripts/cleanup-legacy.py --bmad-dir "{project-root}/_bmad" --module-code rds --also-remove _config --skills-dir "{project-root}/.claude/skills"
 ```
 
-This will:
-- Read `assets/module-help.csv`
-- Merge into `{project-root}/_bmad/help.csv`
-- Prevent duplicates
-- Enable menu code: [SR] Setup RDS
+The script verifies that every skill in the legacy directories exists at `.claude/skills/` before removing anything. Directories without skills (like `_config/`) are removed directly. If the script exits non-zero, surface the error and stop. Missing directories (already cleaned by a prior run) are not errors — the script is idempotent.
 
-### Step 4: Display Success Message
+Check `directories_removed` and `files_removed_count` in the JSON output for the confirmation step. Run `./scripts/cleanup-legacy.py --help` for full usage.
 
-After successful installation, show the module greeting from `assets/module.yaml`.
+## Confirm
 
-### Step 5: Verify Installation
+Use the script JSON output to display what was written — config values set (written to `config.yaml` at root for core, module section for module values), user settings written to `config.user.yaml` (`user_keys` in result), help entries added, fresh install vs update. If legacy files were deleted, mention the migration. If legacy directories were removed, report the count and list (e.g. "Cleaned up 106 installer package files from bmb/, core/, \_config/ — skills are installed at .claude/skills/"). Then display the `module_greeting` from `./assets/module.yaml` to the user.
 
-Confirm:
-- ✅ Config merged into `_bmad/config.yaml`
-- ✅ Help entry added to `_bmad/help.csv`
-- ✅ All 4 agents exist in `_bmad/rds/agents/`
-- ✅ Sidecar memory structure ready
+## Outcome
 
-### Step 6: Register Agent Skills
-
-Create symlinks for the 4 RDS agents in `.claude/skills/` to make them invokable:
-
-```bash
-cd {project-root}/.claude/skills
-for agent in ada grace alan marie; do
-  if [ ! -d "$agent" ]; then
-    mkdir -p "$agent"
-    ln -sf "../../../_bmad/rds/agents/${agent}.md" "$agent/SKILL.md"
-    echo "✅ Registered: /$agent"
-  else
-    echo "⚠️  Skill already exists: /$agent"
-  fi
-done
-```
-
-This enables users to invoke agents via:
-- `/ada` - Project Architect (Phases 1-3)
-- `/grace` - Data Scientist (Phases 4-5)
-- `/alan` - ML Engineer (Phases 6-8)
-- `/marie` - Communicator (Phases 9-10)
-
-## Agent Registration
-
-The RDS module provides 4 specialized agents that users can invoke:
-
-- **Ada (Project Architect)** - `/ada` - Phases 1-3: Setup, Import, Clean
-- **Grace (Data Scientist)** - `/grace` - Phases 4-5: EDA, Features
-- **Alan (ML Engineer)** - `/alan` - Phases 6-8: Build, Tune, Evaluate
-- **Marie (Communicator)** - `/marie` - Phases 9-10: Report, Deploy
-
-**Note:** Agent skills are automatically registered in `.claude/skills/` via symlinks during Step 6 of the setup process.
-
-## Quick Start Guide
-
-After installation, users can:
-
-1. **Start a new project:** Invoke Ada with "I'm starting a new R data science project"
-2. **Explore data:** Invoke Grace with "I need to do EDA on my dataset"
-3. **Build models:** Invoke Alan with "I need to train and tune models"
-4. **Create reports:** Invoke Marie with "I need to create reports and deploy"
-
-## Module Information
-
-**Module Code:** rds  
-**Module Type:** Standalone  
-**Module Path:** `{project-root}/_bmad/rds/`  
-**Config:** `{project-root}/_bmad/rds/config.yaml`
-
-## Success Message
-
-Display this message after successful installation:
-
-```
-🎉 RDS Module Installed Successfully!
-
-The R Data Science module is now available with 4 specialized agents:
-
-🏗️  **Ada** (Project Architect) - Setup, Import, Clean
-    Invoke: /ada or "Hey Ada, help me setup a project"
-
-🔬 **Grace** (Data Scientist) - EDA, Features  
-    Invoke: /grace or "Hey Grace, let's explore this data"
-
-🤖 **Alan** (ML Engineer) - Build, Tune, Evaluate
-    Invoke: /alan or "Hey Alan, I need to build models"
-
-📊 **Marie** (Communicator) - Report, Deploy
-    Invoke: /marie or "Hey Marie, create a report"
-
-**Quick Start:**
-- New project? → Start with Ada
-- Have clean data? → Start with Grace  
-- Features ready? → Start with Alan
-- Model trained? → Start with Marie
-
-**Documentation:** See {project-root}/_bmad/rds/README.md
-
-Happy data sciencing! 🚀
-```
-
-## Error Handling
-
-If validation fails during Step 1:
-- **Missing _bmad/rds/**: Inform user that the RDS module content must be installed first
-- **Missing agents**: Check that `_bmad/rds/agents/` contains ada.md, grace.md, alan.md, marie.md
-- **Missing config**: Verify `_bmad/rds/config.yaml` exists
-
-If script execution fails:
-- Ensure Python 3 is available
-- Check file permissions on scripts
-- Verify script paths are correct
-
-## Notes
-
-- This module requires existing R skills in BMAD for full functionality
-- Agents will automatically activate relevant R skills contextually
-- Sidecar memory persists context across sessions
-- Module is standalone and doesn't depend on other custom modules
+Once the user's `user_name` and `communication_language` are known (from collected input, arguments, or existing config), use them consistently for the remainder of the session: address the user by their configured name and communicate in their configured `communication_language`.

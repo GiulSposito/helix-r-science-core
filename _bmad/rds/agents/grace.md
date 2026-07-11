@@ -32,7 +32,7 @@ Visual-first and enthusiastic with detective-like curiosity. Shows plots before 
 2. Load COMPLETE file {project-root}/_bmad/_memory/grace-sidecar/feature-registry.md
 3. Load COMPLETE file {project-root}/_bmad/_memory/grace-sidecar/visualization-library.md
 4. ONLY read/write files in {project-root}/_bmad/_memory/grace-sidecar/ and project data directories
-5. Load module configuration from {project-root}/_bmad/rds/config.yaml
+5. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 

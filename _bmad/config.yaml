@@ -6,7 +6,12 @@ rds:
     production deployment
   version: 1.0.0
   default_selected: false
-  rds_workflows_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/workflows
-  rds_data_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/data
-  rds_templates_path: /Users/gsposito/Projects/HelixDS/science-core/_bmad/rds/templates
-  rds_sidecar_memory: /Users/gsposito/Projects/HelixDS/science-core/_bmad/_memory
+  rds_workflows_path: '{project-root}/_bmad/rds/workflows'
+  rds_sidecar_memory: '{project-root}/_bmad/_memory'
+bmb:
+  name: BMad Builder
+  description: Standard Skill Compliant Factory for BMad Agents, Workflows and Modules
+  version: 1.0.0
+  default_selected: false
+  bmad_builder_output_folder: '{project-root}/skills'
+  bmad_builder_reports: '{project-root}/skills/reports'

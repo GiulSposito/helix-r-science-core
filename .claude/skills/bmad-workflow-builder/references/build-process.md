@@ -1,176 +1,80 @@
----
-name: build-process
-description: Six-phase conversational discovery process for building BMad workflows and skills. Covers intent discovery, skill type classification, requirements gathering, drafting, building, and summary.
----
-
-**Language:** Use `{communication_language}` for all output.
-
 # Build Process
 
-Build workflows and skills through conversational discovery. Your north star: **outcome-driven design**. Every instruction in the final skill should describe what to achieve, not prescribe how to do it step by step. Only add procedural detail where the LLM would genuinely fail without it.
+This is one loop, not a sequence of phases. It carries Build and Edit, because an edit is the same loop pointed at a skill that already exists. The order below is the usual order of discovery, but nothing forces you to march through it; you pursue whichever outcome the conversation is ready for and you revisit earlier ones as the picture sharpens. Each outcome is a thing you want to be true, not a step you check off.
 
-## Phase 1: Discover Intent
+Load `references/prompt-quality-canon.md` before anything else and hold it as the governing standard for every line you draft — this file deliberately does not restate it, so a section below that names a canon test expects you to already carry it.
 
-Understand their vision before diving into specifics. Let them describe what they want to build — encourage detail on edge cases, tone, persona, tools, and other skills involved.
+Load `references/skill-quality-principles.md` alongside it for the BMad-specific knowledge the scanners verify against, and `references/standard-fields.md` for frontmatter and naming conventions. Load `references/producing-workflow-patterns.md` when the skill produces an artifact, runs across turns, or serves more than one intent (persona, intent modes, graceful degradation). Load `references/working-state-patterns.md` when the skill holds state across turns — it builds something revisable, or an existing skill already carries a `.memlog.md` or a structured working artifact. Load `references/complex-workflow-patterns.md` only when the skill is large enough to carve work out to `references/` (carve-out conventions, multi-stage routing, module metadata).
 
-**Input flexibility:** Accept input in any format:
+## Open by understanding why the user came
 
-- Existing BMad workflow/skill path → read and extract intent (see below)
-- Rough idea or description → guide through discovery
-- Code, documentation, API specs → extract intent and requirements
-- Non-BMad skill/tool → extract intent for conversion
+Before you read a single artifact, understand what the user is actually trying to get done and what "good" looks like to them. The open-floor invitation in activation does most of this work, so read what they dumped and mine the conversation history for the tools, the sequence, the corrections, and the inputs and outputs they have already shown you. Then ask only the gaps that remain. On an edit, this means reading the part of the existing skill the change touches and ignoring the rest, rather than re-deriving the whole spec.
 
-### When given an existing skill
+## Ground it in real expertise
 
-**Critical:** Treat the existing skill as a **description of intent**, not a specification to follow. Extract _what_ it's trying to achieve. Do not inherit its verbosity, structure, or mechanical procedures — the old skill is reference material, not a template.
+A skill drafted from the model's general knowledge ships generic procedure; the value is in what only this project knows. Ask for the sources that carry it: runbooks and internal docs, incident reports and their resolutions, code-review comments, version-control history, or a transcript of the task done by hand once — the corrections the user made along the way are exactly the gotchas the skill exists to encode. And when the skill is extracted from one worked example, make it teach the method rather than that instance's answer: the approach must generalize to the next input even where individual details stay specific.
 
-If the SKILL.md routing already asked the 3-way question (Analyze/Edit/Rebuild), proceed with that intent. Otherwise ask now:
+## Harden the idea before you build it
 
-- **Edit** — changing specific behavior while keeping the current approach
-- **Rebuild** — rethinking from core outcomes, full discovery using the old skill as context
+A skill is cheap to generate and expensive to live with, so push on the idea before drafting rather than building the first description you hear. Pressure-test the shape: is this one skill or three, is it a skill at all or a one-off the user could just ask for directly, what is the single outcome and who consumes it, what real input does it run on, and where would it be thin or fail. Push back where the idea is half-formed, because a builder that accepts a vague idea ships a vague skill.
 
-For **Edit**: use the edit fast-track — full Phase 1-6 is for Rebuild and new builds only.
+Calibrate to the user. When they arrive with a hardened, specific idea or say they want to move fast, confirm the shape and proceed without belaboring it. When the idea is raw, stay in the hardening conversation until the outcome and scope are clear, and for a genuinely exploratory idea offer `bmad-forge-idea` to pressure-test it or `bmad-brainstorming` to widen it before building.
 
-**Edit fast-track:**
+Do not reduce this to a few multiple-choice questions and jump to building. The quiz-and-go feels efficient and skips the part that most determines whether the skill is worth building at all.
 
-1. Read the relevant files in the existing skill
-2. Understand the specific change requested and its scope
-3. Apply the change following outcome-driven principles — preserve what works, improve what's targeted
-4. Run lint gate (Phase 5 lint steps) and fix any findings
-5. Present the change and lint results
+## Propose what the idea implies
 
-If the edit touches the skill's core architecture, classification, or requires rethinking multiple stages, recommend Rebuild instead.
+Hardening cuts the idea down; this builds it out. Before drafting, offer what the user did not ask for but the outcome implies: the patterns in `references/skill-quality-principles.md` whose conditions this skill meets, the sibling intent the artifact obviously wants (update or validate beside create), the input it should accept that nobody mentioned. A line each with why it fits; the user picks, and the declines land in the memlog so a later session does not re-propose them. A builder that only executes the stated idea ships the user's first draft of it.
 
-For **Rebuild**: read the old skill to understand its goals, then proceed through full discovery as if building new — the old skill informs your questions but doesn't constrain the design.
+## Capture continuously into the memlog
 
-### Discovery questions (don't skip these, even with existing input)
+As decisions and directions land, write them to `{target-skill-path}/.memlog.md` through `{project-root}/_bmad/scripts/memlog.py` (`init` once when the target is named, then `append --type <decision|direction|assumption|gap|note|event>` as things happen). For a new skill, propose a kebab-case name when the user did not give one; renaming later is a logged decision, not a redo. The memlog is the canonical process memory, the source for resume, and the trail you audit at handoff so the user can confirm their thinking was handled the way they meant. Capture as you go, not in a batch at the end, because the value is in catching the reasoning while it is still fresh.
 
-The best skills come from understanding the human's intent, not reverse-engineering it from code. Walk through these conversationally — adapt based on what the user has already shared:
+## Write the minimal outcome-driven version first
 
-- What is the **core outcome** this skill delivers? What does success look like?
-- **Who is the user** and how should the experience feel? What's the interaction model — collaborative discovery, rapid execution, guided interview?
-- What **judgment calls** does the LLM need to make vs. just do mechanically?
-- What's the **one thing** this skill must get right?
-- Are there things the user might not know or might get wrong? How should the skill handle that?
+For a new skill, scaffold with `uv run scripts/init_skill.py --name "<name>" --dest {bmad_builder_output_folder}` (add `--dirs references,scripts,assets` only for the directories this build needs, `--customizable` only after the customization ask lands yes); it normalizes the name, writes SKILL.md from the template, and returns JSON paths.
 
-The goal is to conversationally gather enough to cover Phase 2 and 3 naturally. Since users often brain-dump rich detail, adapt subsequent phases to what you already know.
+Draft the canon's small version: the smallest skill that could possibly work, written as destination rather than route. Everything else stays out until a comparison earns it. Default to writing the whole workflow inline in SKILL.md as named sections, carving per the canon's relevance test with the BMad carving conventions in `references/skill-quality-principles.md`.
 
-## Phase 2: Classify Skill Type
+## Run it on real input and reach for eval at the eval beat
 
-Ask upfront:
+A skill that has never run is a guess. Run the minimal version on the real, messy input the user actually has. This is the eval beat, and it is where you invoke `bmad-eval-runner`. Offer baseline mode to confirm the skill beats the bare model on the same input, because a skill that does not beat the bare model has no reason to exist. Offer trigger mode to harden the description against near-miss queries. Both are opt-in; surface them, explain what each one settles, and let the user decide.
 
-- Will this be part of a module? If yes:
-  - What's the module code?
-  - What other skills will it use from the core or module? (need name, inputs, outputs for integration)
-  - What config variables does it need access to?
+Read the transcripts, not just the outputs. Three trace shapes each name their own fix: the model trying several approaches before one works means an instruction is too vague; the model following an instruction that does not apply to the input means it is too broad; the model stalling among alternatives means no default was named.
 
-Load `./classification-reference.md` and classify. Present classification with reasoning.
+Eval cases live at `{target-skill-path}/evals/cases.json`. `{workflow.evals_required}` overrides the opt-in default. When it is empty (default), the modes stay opt-in as above. When it is set, evals are a ship gate: `"baseline"` requires a passing baseline run before the build is done; `"any"` requires at least one case to exist and pass. If a required run fails or cannot be produced, the build is blocked, not shipped.
 
-For Simple Workflows and Complex Workflows, also ask:
+## Add scaffolding only when a comparison demands it
 
-- **Headless mode?** Should this support `--headless`? (If it produces an artifact, headless is often valuable)
+Do not add structure on a hunch. Add it only when the canon's two-version comparison shows the minimal version failing on something concrete you can name. If you find yourself reaching for more structure, first ask whether a sharper outcome statement would have produced the same result; most of the time it would, so sharpen the sentence and skip the scaffold.
 
-## Phase 3: Gather Requirements
+## Hunt for script opportunities throughout
 
-Work through conversationally, adapted per skill type. Glean from what the user already shared or suggest based on their narrative.
+This is the builder's differentiator, so keep it active the whole way through rather than treating it as a single checkpoint. Apply the determinism test and the signal-verb scan from `references/script-opportunities-reference.md` to anything the skill does, prefer native Python, and propose the pre-pass JSON pattern wherever the model would otherwise read raw files to extract facts a script could hand it. If eval transcripts show the model re-writing the same helper across runs, that is the signal to bundle it as a script once. List any non-stdlib dependency and confirm it with the user before relying on it.
 
-**All types — Common fields:**
+## Decide customization with the explicit ask
 
-- **Name:** kebab-case. Module: `{modulecode}-{skillname}`. Standalone: `{skillname}`. The `bmad-` prefix is reserved for official BMad creations only.
-- **Description:** Two parts: [5-8 word summary]. [Use when user says 'specific phrase'.] — Default to conservative triggering. See `./standard-fields.md` for format.
-- **Overview:** What/How/Why-Outcome. For interactive or complex skills, include domain framing and theory of mind — these give the executing agent context for judgment calls.
-- **Role guidance:** Brief "Act as a [role/expert]" primer
-- **Design rationale:** Non-obvious choices the executing agent should understand
-- **External skills used:** Which skills does this invoke?
-- **Script Opportunity Discovery** — Walk through planned steps with the user. Identify deterministic operations that should be scripts not prompts. Load `./script-opportunities-reference.md` for guidance. Confirm the script-vs-prompt plan. If any scripts require external dependencies (anything beyond Python's standard library), explicitly list each dependency and get user approval before proceeding — dependencies add install-time cost and require `uv` to be available.
-- **Creates output documents?** If yes, will use `{document_output_language}`
+`references/customize-toml-guide.md` owns this decision. Load it at this beat and follow it: ask its question once (interactive only, defaults no, headless defaults no), log the decision in the memlog, and emit what the guide says an accepted or declined answer emits.
 
-**Simple Utility additional:**
+## Wire the universal shape, strip ceremony, and ship
 
-- Input/output format, standalone?, composability
+Wire in the shape every producing skill shares: a working-state strategy chosen for this skill (memlog, a structured working artifact, both, or neither — see `references/working-state-patterns.md`), a distillation at finalize for skills whose output feeds downstream consumers, projections produced on demand rather than maintained, polish gated on the user's temperament, and a reviewer gate for skills that produce something substantive. Then strip the ceremony. Confirm the skill passes its own leanness scanner before you hand it off, because the builder has no standing to teach leanness while shipping bloat.
 
-**Simple Workflow additional:**
+Two org gates apply before ship. Check SKILL.md against the token tiers in `references/skill-quality-principles.md` (Length guidance): warn the user between `{workflow.skill_md_token_desired}` and `{workflow.skill_md_token_budget}`, and if it is over `{workflow.skill_md_token_budget}`, lift sections to `references/` until it is back under. And verify the skill satisfies every directive in `{workflow.build_standards}`; treat each as a required criterion, not a suggestion, and resolve any miss before handoff. When the skill is lean, within budget, conformant, runs on real input, and the user has signed off on the memlog audit, ship it.
 
-- Steps (inline in SKILL.md), config variables
+## Handoff
 
-**Complex Workflow additional:**
+Interactive: before handing off, run the lint gate over the built skill — `uv run scripts/quick_validate.py {target-skill-path}`, `uv run scripts/scan-path-standards.py {target-skill-path}`, and `uv run scripts/scan-scripts.py {target-skill-path}` — fix high or critical findings and re-run until clear (after three failed fix attempts, stop and surface it), and run unit tests if the built skill carries scripts. Then show what was built and the lint results, and **offer to run the full validation — the Analyze lenses in `references/scan-orchestration.md` — over the new skill** as the default next step, proactively rather than waiting to be asked. If the user accepts, run the Analyze flow and **open the resulting HTML report for them when it finishes** — that flow produces and opens the report, so do not stop at summarizing findings in chat. Then walk the memlog audit at `{target-skill-path}/.memlog.md` so they confirm their reasoning was handled the way they intended. Once the skill is delivered and the user has been told it is ready, run `{workflow.on_complete}` if non-empty (a string scalar is one instruction, an array is a sequence run in order).
 
-- Stages with purposes, progression conditions, headless behavior, config variables
+Headless (`{headless_mode}=true`): call `set-complete` on the memlog and emit JSON only.
 
-**Module capability metadata (if part of a module):**
-Confirm with user: phase-name, after (dependencies), before (downstream), is-required, description (short — what it produces, not how).
-
-**Path conventions (CRITICAL):**
-
-- Skill-internal: `references/`, `scripts/` (relative to skill root)
-- Project-scope paths: `{project-root}/...` (any path relative to project root)
-- Config variables used directly — they already contain `{project-root}`
-
-## Phase 4: Draft & Refine
-
-Think one level deeper. Clarify gaps in logic or understanding. Create and present a plan. Point out vague areas. Iterate until ready.
-
-**Pruning check (apply before building):**
-
-For every planned instruction, ask: **would the LLM do this correctly without being told?** If yes, cut it. Scoring algorithms, calibration tables, decision matrices for subjective judgment, weighted formulas — these are things LLMs handle naturally. The instruction must earn its place by preventing a failure that would otherwise happen.
-
-Watch especially for:
-
-- Mechanical procedures for tasks the LLM does through general capability
-- Per-platform instructions when a single adaptive instruction works
-- Templates that explain things the LLM already knows (how to format output, how to greet users)
-- Multiple files that could be a single instruction
-
-## Phase 5: Build
-
-**Load these before building:**
-
-- `./standard-fields.md` — field definitions, description format, path rules
-- `./skill-best-practices.md` — outcome-driven authoring, patterns, anti-patterns
-- `./quality-dimensions.md` — build quality checklist
-
-**Load based on skill type:**
-
-- **If Complex Workflow:** `./complex-workflow-patterns.md` — compaction survival, config integration, progressive disclosure
-
-Load the template from `assets/SKILL-template.md` and `./template-substitution-rules.md`. Build the skill with progressive disclosure (SKILL.md for overview and routing, `references/` for progressive disclosure content). Output to `{bmad_builder_output_folder}`.
-
-**Skill Source Tree** (only create subfolders that are needed):
-
-```
-{skill-name}/
-├── SKILL.md           # Frontmatter, overview, activation, routing
-├── references/        # Progressive disclosure content — prompts, guides, schemas
-├── assets/            # Templates, starter files
-├── scripts/           # Deterministic code with tests
-│   └── tests/
+```json
+{
+  "status": "complete",
+  "intent": "build",
+  "skill": "{target-skill-path}",
+  "memlog": "{target-skill-path}/.memlog.md"
+}
 ```
 
-| Location            | Contains                           | LLM relationship                     |
-| ------------------- | ---------------------------------- | ------------------------------------ |
-| **SKILL.md**        | Overview, activation, routing      | LLM identity and router              |
-| **`references/`**   | Capability prompts, reference data | Loaded on demand                     |
-| **`assets/`**       | Templates, starter files           | Copied/transformed into output       |
-| **`scripts/`**      | Python, shell scripts with tests   | Invoked for deterministic operations |
-
-**If the built skill includes scripts**, also load `./script-standards.md` — ensures PEP 723 metadata, correct shebangs, and `uv run` invocation from the start.
-
-**Lint gate** — after building, validate and auto-fix:
-
-If subagents available, delegate lint-fix to a subagent. Otherwise run inline.
-
-1. Run both lint scripts in parallel:
-   ```bash
-   python3 scripts/scan-path-standards.py {skill-path}
-   python3 scripts/scan-scripts.py {skill-path}
-   ```
-2. Fix high/critical findings and re-run (up to 3 attempts per script)
-3. Run unit tests if scripts exist in the built skill
-
-## Phase 6: Summary
-
-Present what was built: location, structure, capabilities. Include lint results.
-
-Run unit tests if scripts exist. Remind user to commit before quality analysis.
-
-**Offer quality analysis:** Ask if they'd like a Quality Analysis to identify opportunities. If yes, load `./quality-analysis.md` with the skill path.
+Use `"intent": "edit"` for an existing skill. If the run is blocked by ambiguous intent that could not be inferred or by lint failures that would not clear, replace `"complete"` with `"blocked"` and add `"reason": "<one-line cause>"`. The memlog carries the detail.

@@ -35,7 +35,7 @@ These fields appear in memory agent SKILL.md files, which use a lean bootloader 
 
 ### Sanctum Template Seed Fields (CREED, BOND, PERSONA templates)
 
-These are content blocks the builder fills during Phase 5 Build. They are NOT template variables for init-script substitution — they are baked into the agent's template files as real content.
+These are content blocks the builder fills when emitting the sanctum templates. They are NOT template variables for init-script substitution — they are baked into the agent's template files as real content.
 
 | Field                       | Destination Template    | Description                                                  |
 | --------------------------- | ----------------------- | ------------------------------------------------------------ |
@@ -48,35 +48,80 @@ These are content blocks the builder fills during Phase 5 Build. They are NOT te
 | `communication-style-seed`  | PERSONA-template.md     | Initial personality expression seed                          |
 | `vibe-prompt`               | PERSONA-template.md     | Prompt for vibe discovery during First Breath                |
 
+## Customization Surface (`customize.toml`)
+
+Every agent ships a `customize.toml` alongside SKILL.md. The file has two parts: a metadata block that is always emitted, and an override surface that is emitted only when the author opted in during build.
+
+### Metadata block (always present)
+
+Consumed by the installer to populate `module.yaml:agents[]` and the central config's `[agents.<code>]` section. Required for every agent regardless of archetype.
+
+| Field         | Type   | Required | Notes                                                                 |
+| ------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `code`        | string | yes      | Stable identifier. Matches skill directory basename (no module prefix). |
+| `name`        | string | optional | Display name. Empty string is valid for First-Breath-named agents.    |
+| `title`       | string | yes      | Role title. Always fillable at build time.                            |
+| `icon`        | string | yes      | Single emoji.                                                         |
+| `description` | string | yes      | One-sentence summary of what the agent does.                          |
+| `agent_type`  | string | yes      | One of `stateless`, `memory`, `autonomous`.                           |
+
+**First-Breath-named agents:** leave `name = ""` at build time. The owner fills it post-activation in `{project-root}/_bmad/custom/config.toml`:
+
+```toml
+[agents.<code>]
+name = "..."
+```
+
+UIs tolerate empty `name` and fall back to `title`.
+
+### Override surface (emitted only when opted in)
+
+Loaded via `{project-root}/_bmad/scripts/resolve_customization.py` at activation. Skip entirely for agents that did not opt in to customization.
+
+| Field                      | Type          | Purpose                                                        |
+| -------------------------- | ------------- | -------------------------------------------------------------- |
+| `activation_steps_prepend` | array[string] | Steps run before standard activation. Overrides append.        |
+| `activation_steps_append`  | array[string] | Steps run after greet, before user input. Overrides append.    |
+| `persistent_facts`         | array[string] | Facts (literal or `file:` prefixed). Overrides append.         |
+
+### Agent-specific scalars (lifted during Configurability Discovery)
+
+Named by purpose and suffix. Override wins (scalar merge rule).
+
+| Naming pattern          | Use for                                       | Example                                          |
+| ----------------------- | --------------------------------------------- | ------------------------------------------------ |
+| `<purpose>_template`    | File paths for templates the agent loads      | `style_guide_template = "resources/style.md"`    |
+| `<purpose>_output_path` | Writable destinations                         | `report_output_path = "{project-root}/reports"`  |
+| `on_<event>`            | Prompt or command executed at a hook point    | `on_session_close = ""`                          |
+
+**Path resolution within scalar values:**
+
+- Bare paths (e.g. `resources/style.md`) resolve from the skill root.
+- `{project-root}/...` resolves from the project working directory — use for org-owned overrides.
+- Config variables are used directly (they already contain `{project-root}`) — no double-prefix.
+
+### How SKILL.md references the resolved values
+
+After the resolver step runs, read customized values as `{agent.<name>}`:
+
+```markdown
+Load the style guide from `{agent.style_guide_template}`.
+```
+
+### Override files
+
+Teams and users override without editing `customize.toml`:
+
+- Team: `{project-root}/_bmad/custom/{skill-name}.toml`
+- Personal: `{project-root}/_bmad/custom/{skill-name}.user.toml`
+
+Both use the same `[agent]` block shape. Merge order: base (skill's `customize.toml`) → team → user.
+
+The archetype defaults for when to emit the override surface at all live in `references/agent-quality-principles.md`.
+
 ## Overview Section Format
 
-The Overview is the first section after the title — it primes the AI for everything that follows.
-
-**3-part formula:**
-
-1. **What** — What this agent does
-2. **How** — How it works (role, approach, modes)
-3. **Why/Outcome** — Value delivered, quality standard
-
-**Templates by agent type:**
-
-**Companion agents:**
-
-```markdown
-This skill provides a {role} who helps users {primary outcome}. Act as {displayName} — {key quality}. With {key features}, {displayName} {primary value proposition}.
-```
-
-**Workflow agents:**
-
-```markdown
-This skill helps you {outcome} through {approach}. Act as {role}, guiding users through {key stages/phases}. Your output is {deliverable}.
-```
-
-**Utility agents:**
-
-```markdown
-This skill {what it does}. Use when {when to use}. Returns {output format} with {key feature}.
-```
+The Overview is the first section after the title — it primes the AI for everything that follows. Cover what the agent does, how it works (role, approach, modes), and the outcome it delivers, written as the agent's own destination rather than a description of the system.
 
 ## SKILL.md Description Format
 
@@ -101,7 +146,7 @@ Use bare paths relative to the skill root — no `./` prefix:
 - `scripts/calculate-metrics.py`
 - `assets/template.md`
 
-These work from any file in the skill because they're always resolved from the skill root. **Never use `./` for cross-directory paths** — `./scripts/foo.py` from a file in `references/` is misleading because `scripts/` is not next to that file.
+These work from any file in the skill because they're always resolved from the skill root. **Never use `./` for cross-directory paths** — writing `./` before `scripts/foo.py` in a file that lives in `references/` is misleading because `scripts/` is not next to that file.
 
 ### Memory Files
 
@@ -122,4 +167,4 @@ Use directly — they already contain `{project-root}` in their resolved values:
 
 - `{output_folder}/file.md`
 - Correct: `{bmad_builder_output_folder}/agent.md`
-- Wrong: `{project-root}/{bmad_builder_output_folder}/agent.md` (double-prefix)
+- Wrong: prefixing the same value with `{project-root}` again (double-prefix)
