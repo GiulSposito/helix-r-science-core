@@ -8,6 +8,62 @@
 
 ---
 
+## Getting Started with BMad + This Module
+
+This repository is a **BMad module** — it runs on top of the [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD), an open-source framework that brings specialized AI agents, structured workflows, and slash commands to Claude Code.
+
+### Step 1 — Install BMad
+
+Run the BMad installer in your project directory. When prompted, select **Claude Code** as your IDE:
+
+```bash
+npx bmad-method install
+```
+
+The installer sets up the core BMad infrastructure (`.claude/skills/`, `_bmad/`) and registers the base help system. Follow the prompts to configure your user name, communication language, and output folder.
+
+> **Want the latest prerelease?** Use `npx bmad-method@next install` — expect more churn than the stable channel.
+
+### Step 2 — Add this module as a Git reference
+
+During the BMad installer flow, when asked about **external modules or plugin sources**, add this repository:
+
+```
+https://github.com/gsposito/helix-r-science-core
+```
+
+BMad will pull the module contents and register the skills under `.claude/skills/`.
+
+Alternatively, if you are working locally with a cloned copy of this repo, point the installer to the local path:
+
+```
+/path/to/helix-r-science-core
+```
+
+### Step 3 — Run the RDS setup skill
+
+Once BMad is installed and the module is registered, activate the RDS module inside Claude Code:
+
+```
+/rds-setup
+```
+
+This single command:
+- Merges RDS configuration into `_bmad/config.yaml`
+- Registers the 4 agents (Ada, Grace, Alan, Marie) in the help system
+- Validates the sidecar memory structure
+
+### Step 4 — Start working
+
+```
+/ada
+[GS]    # Get Started — Ada guides you to the right entry point
+```
+
+Each agent has a `[GS]` Get Started menu that asks where you are in the lifecycle and routes you to the correct workflow.
+
+---
+
 ## Overview
 
 HelixDS Science Core is a production-ready data science framework that combines the power of BMad (Better Model, Advance Development) with specialized R expertise. This repository provides an integrated environment featuring AI-powered agents, structured workflows, and best-practice guidance for the complete data science lifecycle.
@@ -156,24 +212,25 @@ This repository includes 40+ BMad skills across multiple categories:
 ## Repository Structure
 
 ```
-science-core/
-├── _bmad/                      # BMad modules and configuration
+helix-r-science-core/
+├── _bmad/                      # BMad configuration and module content
 │   ├── rds/                   # RDS module (4 agents, 13 workflows)
 │   │   ├── agents/           # Ada, Grace, Alan, Marie
 │   │   ├── workflows/        # 13 production workflows
-│   │   ├── data/             # Checklists, decision trees, references
-│   │   ├── templates/        # Project templates, Quarto, R scripts
 │   │   └── docs/             # Additional documentation
-│   ├── core/                  # Core BMad infrastructure
-│   ├── bmb/                   # BMad Module Builder config
-│   ├── _memory/               # Agent sidecar memory
-│   └── _config/               # Module configurations
+│   ├── _memory/               # Agent sidecar memory (persists across sessions)
+│   ├── config.yaml            # Shared project configuration
+│   └── config.user.yaml       # Personal settings (gitignored)
 │
-├── _bmad-output/              # Generated artifacts
-│   └── bmb-creations/        # Agent plans, validations, reports
+├── _bmad-output/              # Generated artifacts (reports, outputs)
 │
 ├── .claude/                   # Claude Code integration
 │   └── skills/               # 40+ installed skills
+│
+├── .claude-plugin/
+│   └── marketplace.json       # Module distribution manifest
+│
+├── demos/                     # Sample datasets for testing workflows
 │
 └── README.md                  # This file
 ```
