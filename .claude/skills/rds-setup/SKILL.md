@@ -71,6 +71,20 @@ The script verifies that every skill in the legacy directories exists at `.claud
 
 Check `directories_removed` and `files_removed_count` in the JSON output for the confirmation step. Run `./scripts/cleanup-legacy.py --help` for full usage.
 
+## Copy Module Assets
+
+After cleanup, copy the bundled RDS workflows and agents from this skill's assets into the project. These files are the runtime content referenced by all four agents via `{project-root}/_bmad/rds/workflows/` and `{project-root}/_bmad/rds/agents/`.
+
+Resolve `{project-root}` to the actual project root before running, and resolve `rds_workflows_path` from the configured value (defaulting to `{project-root}/_bmad/rds/workflows`):
+
+```bash
+mkdir -p "{project-root}/_bmad/rds"
+cp -r ./assets/rds/workflows/. "{rds_workflows_path}/"
+cp -r ./assets/rds/agents/. "{project-root}/_bmad/rds/agents/"
+```
+
+If either `cp` fails, surface the error and stop. If the destination already exists (update scenario), the copy overwrites existing files, preserving any user customizations that do not conflict. Report how many files were copied to the user in the Confirm step.
+
 ## Confirm
 
 Use the script JSON output to display what was written — config values set (written to `config.yaml` at root for core, module section for module values), user settings written to `config.user.yaml` (`user_keys` in result), help entries added, fresh install vs update. If legacy files were deleted, mention the migration. If legacy directories were removed, report the count and list (e.g. "Cleaned up 106 installer package files from bmb/, core/, \_config/ — skills are installed at .claude/skills/"). Then display the `module_greeting` from `./assets/module.yaml` to the user.
