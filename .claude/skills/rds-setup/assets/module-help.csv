@@ -1,5 +1,6 @@
 module,skill,display-name,menu-code,description,action,args,phase,preceded-by,followed-by,required,output-location,outputs
 RDS: R Data Science,rds-setup,Setup RDS Module,SR,Install and configure the RDS module — registers 4 agents and sets project paths for workflows templates and memory.,configure,"{inline values: skip prompts with provided values}",anytime,,,true,{project-root}/_bmad,config.yaml and module-help.csv
+RDS: R Data Science,rds,RDS Hub,RH,Show available agents and guide to the right starting phase — or pass 'setup' to reconfigure module paths.,get-started,[setup],anytime,,,false,,agent menu displayed
 RDS: R Data Science,ada,Ada - Get Started,GS,Show Ada's entry-point menu to find the right starting phase for your R data science project.,get-started,,anytime,rds-setup:configure,,false,{project-root}/_bmad/_memory/ada-sidecar,sidecar memory loaded
 RDS: R Data Science,ada,Setup Project,SP,Create reproducible project structure with renv and Git — lays the foundation for the full DS lifecycle.,setup-project,,1-setup,rds-setup:configure,ada:import-inspect,false,output_folder,project scaffold
 RDS: R Data Science,ada,Import & Inspect,II,Load datasets and run initial quality checks — detect types missing values and structural issues before cleaning.,import-inspect,,2-import,ada:setup-project,ada:clean-data,false,output_folder,data quality summary

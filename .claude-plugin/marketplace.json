@@ -14,6 +14,7 @@
       "author": {"name": "gsposito"},
       "skills": [
         "./.claude/skills/rds-setup",
+        "./.claude/skills/rds",
         "./.claude/skills/ada",
         "./.claude/skills/grace",
         "./.claude/skills/alan",
