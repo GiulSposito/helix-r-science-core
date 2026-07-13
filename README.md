@@ -89,13 +89,9 @@ HelixDS Science Core is a production-ready data science framework that combines 
 
 ### Installation
 
-1. **Clone this repository:**
-   ```bash
-   git clone <repository-url>
-   cd science-core
-   ```
+1. **Install BMad** (see [Getting Started](#getting-started-with-bmad--this-module) above)
 
-2. **Install the RDS module:**
+2. **Run the RDS module setup:**
    ```
    /rds-setup
    ```
@@ -412,13 +408,12 @@ output_folder: "{project-root}/_bmad-output"
 
 ### RDS Module Configuration
 
-RDS-specific paths in `_bmad/rds/config.yaml`:
+RDS-specific paths are stored in `_bmad/config.yaml` under the `rds:` section:
 
 ```yaml
-rds_workflows_path: "{project-root}/_bmad/rds/workflows"
-rds_data_path: "{project-root}/_bmad/rds/data"
-rds_templates_path: "{project-root}/_bmad/rds/templates"
-rds_sidecar_memory: "{project-root}/_bmad/_memory"
+rds:
+  rds_workflows_path: "{project-root}/_bmad/rds/workflows"
+  rds_sidecar_memory: "{project-root}/_bmad/_memory"
 ```
 
 ---
