@@ -1,6 +1,6 @@
 # RDS: R Data Science Module
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Status:** Production Ready  
 **Module Type:** Standalone
 
@@ -377,6 +377,15 @@ ls _bmad/rds/workflows/
 ---
 
 ## Version History
+
+**v1.1.0** (2026-07-13)
+- Fixed: `assets/rds/agents/` created — agents correctly deployed on `/rds-setup`
+- Fixed: `customize.toml` added to all 4 agent skills for BMad roster compliance
+- Fixed: `rds` hub skill registered in help CSV; menu-code collision `AW` resolved
+- Fixed: Marie `[TR]`, `[ER]`, `[BD]` point to their dedicated workflows
+- Fixed: Grace `[ED]` runs full-lifecycle EDA instead of quick-eda
+- Fixed: Get Started codes aligned (`[GR]`, `[AG]`, `[MG]`)
+- Improved: Workflow Status codes normalized (`AdW`, `GW`, `AlW`, `MW`)
 
 **v1.0.0** (2026-04-16)
 - Initial production release

@@ -2,7 +2,7 @@
 
 > A comprehensive agentic ecosystem for data science excellence in R for Claude Code.
 
-**Version:** 1.0.0  
+**Version:** 1.1.0  
 **Status:** Production Ready  
 **Maintainer:** Giuliano Sposito
 
@@ -51,7 +51,7 @@ Once BMad is installed and the module is registered, activate the RDS module ins
 This single command:
 - Merges RDS configuration into `_bmad/config.yaml`
 - Registers the 4 agents (Ada, Grace, Alan, Marie) in the help system
-- Validates the sidecar memory structure
+- Copies workflows and agent files into `_bmad/rds/`
 
 ### Step 4 — Start working
 
@@ -60,7 +60,7 @@ This single command:
 [GS]    # Get Started — Ada guides you to the right entry point
 ```
 
-Each agent has a `[GS]` Get Started menu that asks where you are in the lifecycle and routes you to the correct workflow.
+Each agent has a Get Started command that asks where you are in the lifecycle and routes you to the correct workflow. Use `[GS]` for Ada, `[GR]` for Grace, `[AG]` for Alan, `[MG]` for Marie — or just describe your situation in plain language.
 
 ---
 
@@ -464,6 +464,15 @@ ls _bmad/rds/workflows/
 ---
 
 ## Version History
+
+**v1.1.0** (2026-07-13)
+- Fixed: `assets/rds/agents/` created — agents now correctly deployed during `/rds-setup`
+- Fixed: `customize.toml` added to all 4 agent skills for BMad roster compliance
+- Fixed: `rds` hub skill registered in help CSV; menu-code collision `AW` resolved
+- Fixed: Marie `[TR]`, `[ER]`, `[BD]` now point to their dedicated workflows
+- Fixed: Grace `[ED]` now runs full-lifecycle EDA instead of quick-eda
+- Fixed: Get Started codes aligned across agents (`[GR]`, `[AG]`, `[MG]`)
+- Improved: Workflow Status codes normalized (`AdW`, `GW`, `AlW`, `MW`)
 
 **v1.0.0** (2026-04-16)
 - Initial production release

@@ -4,7 +4,7 @@ rds:
   name: 'RDS: R Data Science'
   description: 10-Phase Framework for R Data Science Excellence - From raw data to
     production deployment
-  version: 1.0.0
+  version: 1.1.0
   default_selected: false
   rds_workflows_path: '{project-root}/_bmad/rds/workflows'
   rds_sidecar_memory: '{project-root}/_bmad/_memory'

@@ -1,7 +1,7 @@
 code: rds
 name: "RDS: R Data Science"
 description: "10-Phase Framework for R Data Science Excellence — From raw data to production deployment"
-module_version: 1.0.0
+module_version: 1.1.0
 default_selected: false
 module_greeting: >
   RDS Module Installed Successfully!
