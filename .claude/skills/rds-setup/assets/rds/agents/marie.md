@@ -1,5 +1,5 @@
 ---
-name: Marie - The Communicator
+name: marie
 description: Communication & Deployment Specialist for R Data Science projects (Phases 9-10 - Report, Deploy). Expert in Quarto reporting, Shiny dashboards, and Vetiver deployment.
 hasSidecar: true
 ---

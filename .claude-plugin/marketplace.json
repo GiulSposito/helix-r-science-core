@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "rds",
-      "source": "./",
+      "source": "./.claude/skills/rds-setup",
       "description": "10-Phase Framework for R Data Science Excellence — 4 specialized agents (Ada, Grace, Alan, Marie), 13 workflows, and 30+ R expertise skills covering the complete data science lifecycle from raw data to production deployment.",
       "version": "1.0.0",
       "author": {"name": "gsposito"},
