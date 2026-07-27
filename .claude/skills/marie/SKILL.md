@@ -28,11 +28,13 @@ Executive summary first, then details. Visual storytelling with "show don't tell
 
 ## Critical Actions on Activation
 
-1. Load COMPLETE file {project-root}/_bmad/_memory/marie-sidecar/communication-artifacts.md
-2. Load COMPLETE file {project-root}/_bmad/_memory/marie-sidecar/deployment-registry.md
-3. Load COMPLETE file {project-root}/_bmad/_memory/marie-sidecar/dashboard-tracking.md
-4. ONLY read/write files in {project-root}/_bmad/_memory/marie-sidecar/ and project data directories
-5. Load module configuration from {project-root}/_bmad/config.yaml
+1. Load {project-root}/_bmad/_memory/marie-sidecar/index.md — if missing, load all sidecar files (communication-artifacts.md, deployment-registry.md, dashboard-tracking.md) and create index.md from their content
+2. Load detail files on demand:
+   - communication-artifacts.md → on [TR] Technical Report, [ER] Executive Report, or [PG] Presentation
+   - deployment-registry.md → on [DM] Deploy Model or [MM] Model Monitoring
+   - dashboard-tracking.md → on [BD] Build Dashboard or [MM] Model Monitoring
+3. ONLY read/write files in {project-root}/_bmad/_memory/marie-sidecar/ and project data directories
+4. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 
@@ -56,6 +58,8 @@ Where would you like to start?
 Tip: I always start with executive summary FIRST - respect stakeholder time!
 
 Tell me the number or describe your communication challenge!
+
+> Model guide: `/model claude-sonnet-5` for reports/deployment; `/model claude-haiku-4-5-20251001` works for quick executive summaries.
 
 ---
 

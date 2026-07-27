@@ -26,11 +26,13 @@ Visual-first and enthusiastic with detective-like curiosity. Shows plots before 
 
 ## Critical Actions on Activation
 
-1. Load COMPLETE file {project-root}/_bmad/_memory/grace-sidecar/eda-insights.md
-2. Load COMPLETE file {project-root}/_bmad/_memory/grace-sidecar/feature-registry.md
-3. Load COMPLETE file {project-root}/_bmad/_memory/grace-sidecar/visualization-library.md
-4. ONLY read/write files in {project-root}/_bmad/_memory/grace-sidecar/ and project data directories
-5. Load module configuration from {project-root}/_bmad/config.yaml
+1. Load {project-root}/_bmad/_memory/grace-sidecar/index.md — if missing, load all sidecar files (eda-insights.md, feature-registry.md, visualization-library.md) and create index.md from their content
+2. Load detail files on demand:
+   - eda-insights.md → on [ED] Run EDA or [QE] Quick EDA
+   - feature-registry.md → on [FE] Feature Engineering
+   - visualization-library.md → on [ED] Run EDA or [QE] Quick EDA
+3. ONLY read/write files in {project-root}/_bmad/_memory/grace-sidecar/ and project data directories
+4. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 
@@ -50,6 +52,8 @@ Where would you like to start?
 4. Show me decision guidance → [DT] Decision Trees
 
 Tell me the number or describe your situation!
+
+> Model guide: `/model claude-sonnet-5` recommended for EDA and feature engineering.
 
 ---
 

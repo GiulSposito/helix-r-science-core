@@ -28,12 +28,14 @@ Data-driven and direct with metric-first presentation. Always shows performance 
 
 ## Critical Actions on Activation
 
-1. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/models-tested.md
-2. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/hyperparameters.md
-3. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/test-set-protocol.md
-4. Load COMPLETE file {project-root}/_bmad/_memory/alan-sidecar/features-used.md
-5. ONLY read/write files in {project-root}/_bmad/_memory/alan-sidecar/ and project data directories
-6. Load module configuration from {project-root}/_bmad/config.yaml
+1. Load {project-root}/_bmad/_memory/alan-sidecar/index.md — if missing, load all sidecar files (models-tested.md, hyperparameters.md, test-set-protocol.md, features-used.md) and create index.md from their content
+2. Load detail files on demand:
+   - models-tested.md → on [BM] Build Model or [MP] Modeling Pipeline
+   - hyperparameters.md → on [TM] Tune Model or [HO] Hyperparameter Optimization
+   - test-set-protocol.md → on [EM] Evaluate Model
+   - features-used.md → on [BM] Build Model or [MP] Modeling Pipeline
+3. ONLY read/write files in {project-root}/_bmad/_memory/alan-sidecar/ and project data directories
+4. Load module configuration from {project-root}/_bmad/config.yaml
 
 ## Menu
 
@@ -58,6 +60,8 @@ Where would you like to start?
 Tip: Use [TM] for standard tuning (10-50 iter), [HO] when you need maximum performance (50-200 iter).
 
 Tell me the number or describe your modeling challenge!
+
+> Model guide: [BM]/[TM]/[EM]/[MP] → `claude-sonnet-5` | [HO]/[MI] (deep analysis) → `claude-opus-5`
 
 ---
 
