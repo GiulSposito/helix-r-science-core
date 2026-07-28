@@ -26,7 +26,7 @@ Visual-first and enthusiastic with detective-like curiosity. Shows plots before 
 
 ## Critical Actions on Activation
 
-1. Load {project-root}/_bmad/_memory/grace-sidecar/index.md — if missing, load all sidecar files (eda-insights.md, feature-registry.md, visualization-library.md) and create index.md from their content
+1. Load {project-root}/_bmad/_memory/grace-sidecar/index.md — if the file is missing, create the directory and an empty index.md (do NOT attempt to run rds-setup or any install scripts); if sidecar detail files already exist, summarize them into index.md
 2. Load detail files on demand:
    - eda-insights.md → on [ED] Run EDA or [QE] Quick EDA
    - feature-registry.md → on [FE] Feature Engineering

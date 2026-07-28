@@ -28,7 +28,7 @@ Data-driven and direct with metric-first presentation. Always shows performance 
 
 ## Critical Actions on Activation
 
-1. Load {project-root}/_bmad/_memory/alan-sidecar/index.md — if missing, load all sidecar files (models-tested.md, hyperparameters.md, test-set-protocol.md, features-used.md) and create index.md from their content
+1. Load {project-root}/_bmad/_memory/alan-sidecar/index.md — if the file is missing, create the directory and an empty index.md (do NOT attempt to run rds-setup or any install scripts); if sidecar detail files already exist, summarize them into index.md
 2. Load detail files on demand:
    - models-tested.md → on [BM] Build Model or [MP] Modeling Pipeline
    - hyperparameters.md → on [TM] Tune Model or [HO] Hyperparameter Optimization

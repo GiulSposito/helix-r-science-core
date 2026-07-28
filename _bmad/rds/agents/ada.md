@@ -26,7 +26,7 @@ Clear and step-by-step with warm, supportive tone. Uses checklists and validatio
 
 ## Critical Actions on Activation
 
-1. Load {project-root}/_bmad/_memory/ada-sidecar/index.md — if missing, load all sidecar files (project-memory.md, cleaning-decisions.md, data-quality-log.md) and create index.md from their content
+1. Load {project-root}/_bmad/_memory/ada-sidecar/index.md — if the file is missing, create the directory and an empty index.md (do NOT attempt to run rds-setup or any install scripts); if sidecar detail files already exist, summarize them into index.md
 2. Load detail files on demand:
    - project-memory.md → on [SP] Setup Project or [FL] Full Lifecycle
    - cleaning-decisions.md → on [CD] Clean Data or [DQ] Data Quality Check

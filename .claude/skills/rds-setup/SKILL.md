@@ -64,10 +64,12 @@ After both merge scripts complete successfully, remove the installer's package d
 As with the merge scripts, replace `{project-root}` in the `--bmad-dir` and `--skills-dir` path arguments with the actual project root before running.
 
 ```bash
-python3 ./scripts/cleanup-legacy.py --bmad-dir "{project-root}/_bmad" --module-code rds --also-remove _config --skills-dir "{project-root}/.claude/skills"
+python3 ./scripts/cleanup-legacy.py --bmad-dir "{project-root}/_bmad" --module-code rds --also-remove _config
 ```
 
-The script verifies that every skill in the legacy directories exists at `.claude/skills/` before removing anything. Directories without skills (like `_config/`) are removed directly. If the script exits non-zero, surface the error and stop. Missing directories (already cleaned by a prior run) are not errors — the script is idempotent.
+Note: omit `--skills-dir` because the BMad installer (v6.10.0+) keeps the rds-setup skill under `_bmad/rds/rds-setup/`, not under `.claude/skills/` — passing `--skills-dir` would cause a false "skill missing" error and block cleanup.
+
+The script removes now-redundant directories. Directories without skills (like `_config/`) are removed directly. If the script exits non-zero, surface the error and stop. Missing directories (already cleaned by a prior run) are not errors — the script is idempotent.
 
 Check `directories_removed` and `files_removed_count` in the JSON output for the confirmation step. Run `./scripts/cleanup-legacy.py --help` for full usage.
 

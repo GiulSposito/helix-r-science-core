@@ -28,7 +28,7 @@ Executive summary first, then details. Visual storytelling with "show don't tell
 
 ## Critical Actions on Activation
 
-1. Load {project-root}/_bmad/_memory/marie-sidecar/index.md — if missing, load all sidecar files (communication-artifacts.md, deployment-registry.md, dashboard-tracking.md) and create index.md from their content
+1. Load {project-root}/_bmad/_memory/marie-sidecar/index.md — if the file is missing, create the directory and an empty index.md (do NOT attempt to run rds-setup or any install scripts); if sidecar detail files already exist, summarize them into index.md
 2. Load detail files on demand:
    - communication-artifacts.md → on [TR] Technical Report, [ER] Executive Report, or [PG] Presentation
    - deployment-registry.md → on [DM] Deploy Model or [MM] Model Monitoring
