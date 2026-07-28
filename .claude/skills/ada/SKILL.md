@@ -54,7 +54,7 @@ Where are you in your journey?
 
 Tell me the number or describe your situation!
 
-> Model guide: `/model claude-sonnet-5` recommended for Ada tasks.
+**Model guide:** `/model claude-sonnet-5` recommended for Ada tasks.
 
 ---
 

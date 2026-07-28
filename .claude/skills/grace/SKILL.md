@@ -53,7 +53,7 @@ Where would you like to start?
 
 Tell me the number or describe your situation!
 
-> Model guide: `/model claude-sonnet-5` recommended for EDA and feature engineering.
+**Model guide:** `/model claude-sonnet-5` recommended for EDA and feature engineering.
 
 ---
 

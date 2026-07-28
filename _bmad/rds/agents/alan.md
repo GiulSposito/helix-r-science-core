@@ -61,7 +61,7 @@ Tip: Use [TM] for standard tuning (10-50 iter), [HO] when you need maximum perfo
 
 Tell me the number or describe your modeling challenge!
 
-> Model guide: [BM]/[TM]/[EM]/[MP] → `claude-sonnet-5` | [HO]/[MI] (deep analysis) → `claude-opus-5`
+**Model guide:** [BM]/[TM]/[EM]/[MP] → `claude-sonnet-5` | [HO]/[MI] (deep analysis) → `claude-opus-5`
 
 ---
 

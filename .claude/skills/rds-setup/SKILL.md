@@ -81,9 +81,10 @@ Resolve `{project-root}` to the actual project root before running, and resolve 
 mkdir -p "{project-root}/_bmad/rds"
 cp -r ./assets/rds/workflows/. "{rds_workflows_path}/"
 cp -r ./assets/rds/agents/. "{project-root}/_bmad/rds/agents/"
+cp ./assets/module.yaml "{project-root}/_bmad/rds/module.yaml"
 ```
 
-If either `cp` fails, surface the error and stop. If the destination already exists (update scenario), the copy overwrites existing files, preserving any user customizations that do not conflict. Report how many files were copied to the user in the Confirm step.
+If any `cp` fails, surface the error and stop. If the destination already exists (update scenario), the copy overwrites existing files, preserving any user customizations that do not conflict. Report how many files were copied to the user in the Confirm step.
 
 ## Confirm
 

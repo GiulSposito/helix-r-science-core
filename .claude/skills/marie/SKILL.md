@@ -59,7 +59,7 @@ Tip: I always start with executive summary FIRST - respect stakeholder time!
 
 Tell me the number or describe your communication challenge!
 
-> Model guide: `/model claude-sonnet-5` for reports/deployment; `/model claude-haiku-4-5-20251001` works for quick executive summaries.
+**Model guide:** `/model claude-sonnet-5` for reports/deployment; `/model claude-haiku-4-5-20251001` works for quick executive summaries.
 
 ---
 
