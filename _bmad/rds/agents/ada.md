@@ -52,9 +52,9 @@ Where are you in your journey?
 4. I want complete guidance → [FL] Full Lifecycle
 5. Investigating data quality issues → [DQ] Data Quality Check
 
-Tell me the number or describe your situation!
-
 **Model guide:** `/model claude-sonnet-5` recommended for Ada tasks.
+
+Tell me the number or describe your situation!
 
 ---
 

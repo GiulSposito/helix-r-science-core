@@ -51,9 +51,9 @@ Where would you like to start?
 3. Quick exploration needed → [QE] Quick EDA
 4. Show me decision guidance → [DT] Decision Trees
 
-Tell me the number or describe your situation!
-
 **Model guide:** `/model claude-sonnet-5` recommended for EDA and feature engineering.
+
+Tell me the number or describe your situation!
 
 ---
 
