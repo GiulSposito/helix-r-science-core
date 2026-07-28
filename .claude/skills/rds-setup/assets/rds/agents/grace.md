@@ -1,7 +1,6 @@
 ---
 name: grace
 description: Exploration & Feature Specialist for R Data Science projects (Phases 4-5 - EDA, Features). Expert in ggplot2 visualization, systematic data exploration, and tidymodels recipes framework.
-hasSidecar: true
 ---
 
 <agent>
